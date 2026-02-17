@@ -34,7 +34,9 @@ function initializeDb(db: Database.Database) {
       home_score INTEGER,
       away_score INTEGER,
       status TEXT NOT NULL DEFAULT 'upcoming' CHECK(status IN ('upcoming', 'live', 'finished')),
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      tournament_id INTEGER,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE SET NULL
     );
 
     CREATE TABLE IF NOT EXISTS tips (
@@ -56,6 +58,28 @@ function initializeDb(db: Database.Database) {
       label TEXT NOT NULL,
       points INTEGER NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS tournaments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'finished')),
+      winner_team TEXT,
+      best_scorer TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS tournament_tips (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      tournament_id INTEGER NOT NULL,
+      winning_team TEXT NOT NULL,
+      best_scorer TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
+      UNIQUE(user_id, tournament_id)
+    );
   `);
 
   // Seed default scoring rules if empty
@@ -65,6 +89,22 @@ function initializeDb(db: Database.Database) {
     insert.run('exact_score', 'Exact score prediction', 5);
     insert.run('correct_outcome', 'Correct outcome (win/draw/loss)', 2);
     insert.run('correct_goal_diff', 'Correct goal difference', 3);
+    insert.run('tournament_winner', 'Correct tournament winner', 10);
+    insert.run('tournament_scorer', 'Correct tournament best scorer', 10);
+  }
+
+  // Seed tournament scoring rules if missing
+  const tournamentWinnerRule = db.prepare("SELECT COUNT(*) as count FROM scoring_rules WHERE key = 'tournament_winner'").get() as { count: number };
+  if (tournamentWinnerRule.count === 0) {
+    const insertRule = db.prepare('INSERT INTO scoring_rules (key, label, points) VALUES (?, ?, ?)');
+    insertRule.run('tournament_winner', 'Correct tournament winner', 10);
+    insertRule.run('tournament_scorer', 'Correct tournament best scorer', 10);
+  }
+
+  // Add tournament_id column to matches if it doesn't exist
+  const matchColumns = db.prepare("PRAGMA table_info(matches)").all() as any[];
+  if (!matchColumns.find((c: any) => c.name === 'tournament_id')) {
+    db.exec('ALTER TABLE matches ADD COLUMN tournament_id INTEGER REFERENCES tournaments(id) ON DELETE SET NULL');
   }
 
   // Seed default admin user if no users exist

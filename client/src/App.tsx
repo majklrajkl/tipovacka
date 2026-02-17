@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import MatchesPage from './pages/MatchesPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import AdminPage from './pages/AdminPage';
+import TournamentsPage from './pages/TournamentsPage';
 import ProfilePage from './pages/ProfilePage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -40,6 +41,7 @@ export default function App() {
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
       <Route path="/matches" element={<PrivateRoute><MatchesPage /></PrivateRoute>} />
+      <Route path="/tournaments" element={<PrivateRoute><TournamentsPage /></PrivateRoute>} />
       <Route path="/leaderboard" element={<PrivateRoute><LeaderboardPage /></PrivateRoute>} />
       <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
       <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />

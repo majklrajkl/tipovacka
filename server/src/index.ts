@@ -6,6 +6,7 @@ import matchRoutes from './routes/matches';
 import tipRoutes from './routes/tips';
 import leaderboardRoutes from './routes/leaderboard';
 import adminRoutes from './routes/admin';
+import tournamentRoutes from './routes/tournaments';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,6 +20,7 @@ app.use('/api/matches', matchRoutes);
 app.use('/api/tips', tipRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/tournaments', tournamentRoutes);
 
 // Serve static frontend in production
 const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');

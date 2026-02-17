@@ -41,7 +41,7 @@ router.get('/', authRequired, (req: Request, res: Response) => {
 
 // Create a match (admin only)
 router.post('/', authRequired, adminRequired, (req: Request, res: Response) => {
-  const { homeTeam, awayTeam, kickoff } = req.body;
+  const { homeTeam, awayTeam, kickoff, tournamentId } = req.body;
   if (!homeTeam || !awayTeam || !kickoff) {
     res.status(400).json({ error: 'Home team, away team, and kickoff time are required' });
     return;
@@ -49,14 +49,15 @@ router.post('/', authRequired, adminRequired, (req: Request, res: Response) => {
 
   const db = getDb();
   const result = db.prepare(
-    'INSERT INTO matches (home_team, away_team, kickoff) VALUES (?, ?, ?)'
-  ).run(homeTeam, awayTeam, kickoff);
+    'INSERT INTO matches (home_team, away_team, kickoff, tournament_id) VALUES (?, ?, ?, ?)'
+  ).run(homeTeam, awayTeam, kickoff, tournamentId || null);
 
   res.status(201).json({
     id: result.lastInsertRowid,
     home_team: homeTeam,
     away_team: awayTeam,
     kickoff,
+    tournament_id: tournamentId || null,
     status: 'upcoming',
   });
 });

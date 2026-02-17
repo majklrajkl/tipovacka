@@ -11,6 +11,8 @@ interface LeaderboardEntry {
   correctDiffs: number;
   tipsCount: number;
   matchesPlayed: number;
+  tournamentWinners: number;
+  tournamentScorers: number;
 }
 
 interface ScoringRule {
@@ -115,6 +117,12 @@ export default function LeaderboardPage() {
               <th className="text-center text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 sm:px-4 py-3 hidden sm:table-cell">
                 Outcome
               </th>
+              <th className="text-center text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 sm:px-4 py-3 hidden lg:table-cell">
+                T.Winner
+              </th>
+              <th className="text-center text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 sm:px-4 py-3 hidden lg:table-cell">
+                T.Scorer
+              </th>
               <th className="text-center text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 sm:px-4 py-3 hidden md:table-cell">
                 Tips
               </th>
@@ -152,6 +160,12 @@ export default function LeaderboardPage() {
                 </td>
                 <td className="px-2 sm:px-4 py-3 text-center hidden sm:table-cell">
                   <span className="text-sm text-yellow-600 font-medium">{entry.correctOutcomes}</span>
+                </td>
+                <td className="px-2 sm:px-4 py-3 text-center hidden lg:table-cell">
+                  <span className="text-sm text-purple-600 font-medium">{entry.tournamentWinners}</span>
+                </td>
+                <td className="px-2 sm:px-4 py-3 text-center hidden lg:table-cell">
+                  <span className="text-sm text-purple-600 font-medium">{entry.tournamentScorers}</span>
                 </td>
                 <td className="px-2 sm:px-4 py-3 text-center hidden md:table-cell">
                   <span className="text-sm text-gray-500">

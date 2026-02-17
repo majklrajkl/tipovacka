@@ -17,12 +17,20 @@ router.get('/', authRequired, (req: Request, res: Response) => {
   ).all() as any[];
   const tips = db.prepare('SELECT * FROM tips').all() as any[];
 
+  // Tournament data
+  const finishedTournaments = db.prepare(
+    "SELECT * FROM tournaments WHERE status = 'finished'"
+  ).all() as any[];
+  const tournamentTips = db.prepare('SELECT * FROM tournament_tips').all() as any[];
+
   const leaderboard = users.map((user: any) => {
     let totalPoints = 0;
     let exactScores = 0;
     let correctOutcomes = 0;
     let correctDiffs = 0;
     let tipsCount = 0;
+    let tournamentWinners = 0;
+    let tournamentScorers = 0;
 
     finishedMatches.forEach((match: any) => {
       const tip = tips.find((t: any) => t.user_id === user.id && t.match_id === match.id);
@@ -53,6 +61,23 @@ router.get('/', authRequired, (req: Request, res: Response) => {
       }
     });
 
+    // Tournament points
+    finishedTournaments.forEach((tournament: any) => {
+      const tTip = tournamentTips.find(
+        (t: any) => t.user_id === user.id && t.tournament_id === tournament.id
+      );
+      if (!tTip) return;
+
+      if (tournament.winner_team && tTip.winning_team.toLowerCase() === tournament.winner_team.toLowerCase()) {
+        totalPoints += rulesMap['tournament_winner'] || 10;
+        tournamentWinners++;
+      }
+      if (tournament.best_scorer && tTip.best_scorer.toLowerCase() === tournament.best_scorer.toLowerCase()) {
+        totalPoints += rulesMap['tournament_scorer'] || 10;
+        tournamentScorers++;
+      }
+    });
+
     return {
       userId: user.id,
       username: user.username,
@@ -62,6 +87,8 @@ router.get('/', authRequired, (req: Request, res: Response) => {
       correctDiffs,
       tipsCount,
       matchesPlayed: finishedMatches.length,
+      tournamentWinners,
+      tournamentScorers,
     };
   });
 

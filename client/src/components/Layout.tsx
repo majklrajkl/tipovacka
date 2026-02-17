@@ -9,6 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { to: '/matches', label: 'Matches' },
+    { to: '/tournaments', label: 'Tournaments' },
     { to: '/leaderboard', label: 'Leaderboard' },
     ...(user?.isAdmin ? [{ to: '/admin', label: 'Admin' }] : []),
   ];
