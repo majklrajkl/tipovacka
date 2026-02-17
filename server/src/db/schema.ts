@@ -26,6 +26,15 @@ function initializeDb(db: Database.Database) {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
+    CREATE TABLE IF NOT EXISTS tournaments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'finished')),
+      winner_team TEXT,
+      best_scorer TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
     CREATE TABLE IF NOT EXISTS matches (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       home_team TEXT NOT NULL,
@@ -57,15 +66,6 @@ function initializeDb(db: Database.Database) {
       key TEXT UNIQUE NOT NULL,
       label TEXT NOT NULL,
       points INTEGER NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS tournaments (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'finished')),
-      winner_team TEXT,
-      best_scorer TEXT,
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
     CREATE TABLE IF NOT EXISTS tournament_tips (
