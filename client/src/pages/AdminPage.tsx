@@ -214,7 +214,7 @@ function MatchesTab() {
                       {match.home_team} vs {match.away_team}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {new Date(match.kickoff).toLocaleString()} &mdash;{' '}
+                      {(() => { const d = new Date(match.kickoff); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; })()} &mdash;{' '}
                       <span
                         className={`font-medium ${
                           match.status === 'finished' ? 'text-gray-500' : 'text-blue-500'
@@ -605,7 +605,7 @@ function UsersTab() {
                 )}
               </p>
               <p className="text-xs text-gray-400">
-                Joined {new Date(u.created_at).toLocaleDateString()}
+                Joined {(() => { const d = new Date(u.created_at); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; })()}
               </p>
             </div>
             <div className="flex items-center gap-3">
