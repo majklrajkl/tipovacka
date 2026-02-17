@@ -67,6 +67,11 @@ export const api = {
     }),
   deleteMatch: (id: number) =>
     request<any>(`/matches/${id}`, { method: 'DELETE' }),
+  importMatches: (matches: { homeTeam: string; awayTeam: string; kickoff: string }[], tournamentId?: number | null) =>
+    request<{ imported: number; errors: string[] }>('/matches/import', {
+      method: 'POST',
+      body: JSON.stringify({ matches, tournamentId }),
+    }),
 
   // Tips
   submitTip: (matchId: number, homeScore: number, awayScore: number) =>

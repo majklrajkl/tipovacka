@@ -65,6 +65,10 @@ function MatchesTab() {
   const [matches, setMatches] = useState<any[]>([]);
   const [matchesLoading, setMatchesLoading] = useState(true);
   const [resultInputs, setResultInputs] = useState<Record<number, { home: string; away: string }>>({});
+  const [showImport, setShowImport] = useState(false);
+  const [csvText, setCsvText] = useState('');
+  const [importTournamentId, setImportTournamentId] = useState<string>('');
+  const [importing, setImporting] = useState(false);
 
   const fetchMatches = async () => {
     const data = await api.getMatches();
@@ -191,6 +195,89 @@ function MatchesTab() {
             {loading ? 'Creating...' : 'Create Match'}
           </button>
         </form>
+      </div>
+
+      {/* Import from CSV */}
+      <div className="card">
+        <button
+          onClick={() => setShowImport(!showImport)}
+          className="w-full px-6 py-4 flex items-center justify-between text-left"
+        >
+          <h2 className="text-lg font-semibold text-gray-900">Import Matches from CSV</h2>
+          <span className="text-gray-400 text-sm">{showImport ? 'Hide' : 'Show'}</span>
+        </button>
+        {showImport && (
+          <div className="px-6 pb-6 space-y-4">
+            <p className="text-sm text-gray-500">
+              Paste CSV data with one match per line. Format: <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">HomeTeam,AwayTeam,YYYY-MM-DDTHH:MM</code>
+            </p>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-400 mb-1">Example:</p>
+              <pre className="text-xs text-gray-600 leading-relaxed">Germany,Scotland,2026-06-11T21:00{'\n'}Hungary,Switzerland,2026-06-12T15:00{'\n'}Spain,Croatia,2026-06-12T18:00</pre>
+            </div>
+            <div>
+              <label className="label">Tournament (optional)</label>
+              <select
+                className="input"
+                value={importTournamentId}
+                onChange={(e) => setImportTournamentId(e.target.value)}
+              >
+                <option value="">No tournament</option>
+                {tournaments.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="label">CSV Data</label>
+              <textarea
+                className="input min-h-[120px] font-mono text-sm"
+                value={csvText}
+                onChange={(e) => setCsvText(e.target.value)}
+                placeholder="Germany,Scotland,2026-06-11T21:00"
+                rows={6}
+              />
+            </div>
+            <button
+              onClick={async () => {
+                setError('');
+                setSuccess('');
+                const lines = csvText.trim().split('\n').filter((l) => l.trim());
+                if (lines.length === 0) {
+                  setError('No data to import');
+                  return;
+                }
+                const parsed = lines.map((line) => {
+                  const parts = line.split(',').map((s) => s.trim());
+                  return { homeTeam: parts[0], awayTeam: parts[1], kickoff: parts[2] };
+                });
+                const invalid = parsed.filter((m) => !m.homeTeam || !m.awayTeam || !m.kickoff);
+                if (invalid.length > 0) {
+                  setError(`${invalid.length} row(s) have missing fields. Each row needs: HomeTeam,AwayTeam,Kickoff`);
+                  return;
+                }
+                setImporting(true);
+                try {
+                  const result = await api.importMatches(
+                    parsed,
+                    importTournamentId ? Number(importTournamentId) : null
+                  );
+                  setSuccess(`Imported ${result.imported} match${result.imported !== 1 ? 'es' : ''}${result.errors.length > 0 ? ` (${result.errors.length} skipped)` : ''}`);
+                  setCsvText('');
+                  fetchMatches();
+                } catch (err: any) {
+                  setError(err.message);
+                } finally {
+                  setImporting(false);
+                }
+              }}
+              disabled={importing || !csvText.trim()}
+              className="btn-primary"
+            >
+              {importing ? 'Importing...' : 'Import Matches'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Existing matches - set results */}

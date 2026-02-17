@@ -112,6 +112,39 @@ router.put('/:id', authRequired, adminRequired, (req: Request, res: Response) =>
   res.json({ message: 'Match updated' });
 });
 
+// Bulk import matches (admin only)
+router.post('/import', authRequired, adminRequired, (req: Request, res: Response) => {
+  const { matches, tournamentId } = req.body;
+  if (!Array.isArray(matches) || matches.length === 0) {
+    res.status(400).json({ error: 'An array of matches is required' });
+    return;
+  }
+
+  const db = getDb();
+  const insert = db.prepare(
+    'INSERT INTO matches (home_team, away_team, kickoff, tournament_id) VALUES (?, ?, ?, ?)'
+  );
+
+  const errors: string[] = [];
+  let imported = 0;
+
+  const importAll = db.transaction(() => {
+    for (let i = 0; i < matches.length; i++) {
+      const m = matches[i];
+      if (!m.homeTeam || !m.awayTeam || !m.kickoff) {
+        errors.push(`Row ${i + 1}: missing homeTeam, awayTeam, or kickoff`);
+        continue;
+      }
+      insert.run(m.homeTeam.trim(), m.awayTeam.trim(), m.kickoff.trim(), tournamentId || null);
+      imported++;
+    }
+  });
+
+  importAll();
+
+  res.status(201).json({ imported, errors });
+});
+
 // Delete match (admin only)
 router.delete('/:id', authRequired, adminRequired, (req: Request, res: Response) => {
   const db = getDb();
