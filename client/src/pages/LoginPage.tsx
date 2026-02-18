@@ -23,20 +23,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-50 px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-600 rounded-2xl mb-4">
-            <span className="text-white text-2xl font-bold">T</span>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl mb-3 shadow-lg shadow-primary-500/20">
+            <span className="text-white text-xl font-bold">T</span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Tipovačka</h1>
-          <p className="text-gray-500 mt-1">Sign in to your account</p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Tipovacka</h1>
+          <p className="text-gray-400 text-sm mt-0.5">Sign in to your account</p>
         </div>
 
-        <div className="card p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="card p-5">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {error && (
-              <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm border border-red-200">
+              <div className="bg-red-50 text-red-700 px-3 py-2 rounded-lg text-xs border border-red-200">
                 {error}
               </div>
             )}
@@ -63,16 +63,12 @@ export default function LoginPage() {
                 required
               />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full"
-            >
+            <button type="submit" disabled={loading} className="btn-primary w-full">
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-4">
+          <p className="text-center text-xs text-gray-400 mt-4">
             Don't have an account?{' '}
             <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
               Create one

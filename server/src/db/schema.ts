@@ -80,6 +80,17 @@ function initializeDb(db: Database.Database) {
       FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
       UNIQUE(user_id, tournament_id)
     );
+
+    CREATE TABLE IF NOT EXISTS tournament_members (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      tournament_id INTEGER NOT NULL,
+      paid INTEGER NOT NULL DEFAULT 0,
+      joined_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
+      UNIQUE(user_id, tournament_id)
+    );
   `);
 
   // Seed default scoring rules if empty
@@ -105,6 +116,12 @@ function initializeDb(db: Database.Database) {
   const matchColumns = db.prepare("PRAGMA table_info(matches)").all() as any[];
   if (!matchColumns.find((c: any) => c.name === 'tournament_id')) {
     db.exec('ALTER TABLE matches ADD COLUMN tournament_id INTEGER REFERENCES tournaments(id) ON DELETE SET NULL');
+  }
+
+  // Add description column to tournaments if it doesn't exist
+  const tournamentColumns = db.prepare("PRAGMA table_info(tournaments)").all() as any[];
+  if (!tournamentColumns.find((c: any) => c.name === 'description')) {
+    db.exec('ALTER TABLE tournaments ADD COLUMN description TEXT');
   }
 
   // Seed default admin user if no users exist

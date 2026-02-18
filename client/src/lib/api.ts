@@ -81,7 +81,10 @@ export const api = {
     }),
 
   // Leaderboard
-  getLeaderboard: () => request<{ leaderboard: any[]; rules: any[] }>('/leaderboard'),
+  getLeaderboard: (tournamentId?: number | null) =>
+    request<{ leaderboard: any[]; rules: any[]; tournament: any }>(
+      tournamentId ? `/leaderboard?tournamentId=${tournamentId}` : '/leaderboard'
+    ),
 
   // Admin
   getScoringRules: () => request<{ rules: any[] }>('/admin/scoring-rules'),
@@ -93,23 +96,38 @@ export const api = {
   getUsers: () => request<{ users: any[] }>('/admin/users'),
   toggleAdmin: (id: number) =>
     request<any>(`/admin/users/${id}/toggle-admin`, { method: 'PUT' }),
+  resetUserPassword: (id: number, newPassword: string) =>
+    request<any>(`/admin/users/${id}/reset-password`, {
+      method: 'PUT',
+      body: JSON.stringify({ newPassword }),
+    }),
+  getTournamentMembers: () =>
+    request<{ members: any[] }>('/admin/tournament-members'),
+  toggleMemberPaid: (userId: number, tournamentId: number) =>
+    request<any>(`/admin/tournament-members/${userId}/${tournamentId}/paid`, {
+      method: 'PUT',
+    }),
 
   // Tournaments
   getTournaments: () => request<{ tournaments: any[] }>('/tournaments'),
   getTournament: (id: number) =>
-    request<{ tournament: any; matches: any[]; users: any[]; tournamentTips: Record<number, any> }>(`/tournaments/${id}`),
-  createTournament: (name: string) =>
+    request<{ tournament: any; matches: any[]; users: any[]; tournamentTips: Record<number, any>; canSubmitTournamentTip: boolean }>(`/tournaments/${id}`),
+  createTournament: (name: string, description?: string) =>
     request<any>('/tournaments', {
       method: 'POST',
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, description }),
     }),
-  updateTournament: (id: number, data: { name?: string; status?: string; winnerTeam?: string; bestScorer?: string }) =>
+  updateTournament: (id: number, data: { name?: string; status?: string; winnerTeam?: string; bestScorer?: string; description?: string }) =>
     request<any>(`/tournaments/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
   deleteTournament: (id: number) =>
     request<any>(`/tournaments/${id}`, { method: 'DELETE' }),
+  joinTournament: (id: number) =>
+    request<any>(`/tournaments/${id}/join`, { method: 'POST' }),
+  leaveTournament: (id: number) =>
+    request<any>(`/tournaments/${id}/leave`, { method: 'POST' }),
   submitTournamentTip: (tournamentId: number, winningTeam: string, bestScorer: string) =>
     request<any>(`/tournaments/${tournamentId}/tips`, {
       method: 'POST',

@@ -31,7 +31,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  if (user) return <Navigate to="/matches" />;
+  if (user) return <Navigate to="/tournaments" />;
   return <>{children}</>;
 }
 
@@ -45,7 +45,7 @@ export default function App() {
       <Route path="/leaderboard" element={<PrivateRoute><LeaderboardPage /></PrivateRoute>} />
       <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
       <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
-      <Route path="*" element={<Navigate to="/matches" />} />
+      <Route path="*" element={<Navigate to="/tournaments" />} />
     </Routes>
   );
 }
