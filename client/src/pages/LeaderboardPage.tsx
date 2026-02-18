@@ -226,6 +226,24 @@ export default function LeaderboardPage() {
                 </div>
               ))}
             </div>
+            {/* Play Off rules */}
+            {(() => {
+              const matchRules = rules.filter((r) => ['exact_score', 'correct_goal_diff', 'correct_outcome'].includes(r.key));
+              if (matchRules.length === 0) return null;
+              return (
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <h3 className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-2">Play Off Matches (2x points)</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    {matchRules.map((rule) => (
+                      <div key={`po-${rule.id}`} className="flex items-center justify-between bg-purple-50 rounded-lg px-3 py-2">
+                        <span className="text-xs text-purple-700">{rule.label}</span>
+                        <span className="text-sm font-bold text-purple-600">{rule.points * 2}pt{rule.points * 2 !== 1 ? 's' : ''}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </>
       )}

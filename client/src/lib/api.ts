@@ -65,10 +65,10 @@ export const api = {
 
   // Matches
   getMatches: () => request<{ matches: any[]; users: any[] }>('/matches'),
-  createMatch: (homeTeam: string, awayTeam: string, kickoff: string, tournamentId?: number | null) =>
+  createMatch: (homeTeam: string, awayTeam: string, kickoff: string, tournamentId?: number | null, isPlayoff?: boolean) =>
     request<any>('/matches', {
       method: 'POST',
-      body: JSON.stringify({ homeTeam, awayTeam, kickoff, tournamentId }),
+      body: JSON.stringify({ homeTeam, awayTeam, kickoff, tournamentId, isPlayoff }),
     }),
   updateMatchResult: (id: number, homeScore: number, awayScore: number, status: string) =>
     request<any>(`/matches/${id}/result`, {

@@ -10,6 +10,7 @@ interface Match {
   home_score: number | null;
   away_score: number | null;
   status: string;
+  is_playoff: number;
   tips_visible: number;
   tips: Record<number, { homeScore: number; awayScore: number }>;
 }
@@ -187,9 +188,16 @@ export default function MatchesPage() {
                 {/* Match header */}
                 <div className="px-4 sm:px-6 py-4 border-b border-gray-100">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-400 font-medium">
-                      {formatDate(match.kickoff)}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400 font-medium">
+                        {formatDate(match.kickoff)}
+                      </span>
+                      {!!match.is_playoff && (
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">
+                          Play Off
+                        </span>
+                      )}
+                    </div>
                     <span
                       className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                         match.status === 'upcoming'

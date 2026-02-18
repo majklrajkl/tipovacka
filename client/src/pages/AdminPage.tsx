@@ -72,6 +72,7 @@ function MatchesTab() {
   const [csvText, setCsvText] = useState('');
   const [importTournamentId, setImportTournamentId] = useState<string>('');
   const [importing, setImporting] = useState(false);
+  const [isPlayoff, setIsPlayoff] = useState(false);
 
   const fetchMatches = async () => {
     const data = await api.getMatches();
@@ -97,12 +98,13 @@ function MatchesTab() {
     setSuccess('');
     setLoading(true);
     try {
-      await api.createMatch(homeTeam, awayTeam, kickoff, tournamentId ? Number(tournamentId) : null);
+      await api.createMatch(homeTeam, awayTeam, kickoff, tournamentId ? Number(tournamentId) : null, isPlayoff);
       setSuccess(`Match "${homeTeam} vs ${awayTeam}" created`);
       setHomeTeam('');
       setAwayTeam('');
       setKickoff('');
       setTournamentId('');
+      setIsPlayoff(false);
       fetchMatches();
     } catch (err: any) {
       setError(err.message);
@@ -167,6 +169,10 @@ function MatchesTab() {
               </select>
             </div>
           </div>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked={isPlayoff} onChange={(e) => setIsPlayoff(e.target.checked)} className="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            <span className="text-xs font-medium text-gray-700">Play Off match (2x points)</span>
+          </label>
           <button type="submit" disabled={loading} className="btn-primary btn-sm">
             {loading ? 'Creating...' : 'Create Match'}
           </button>
@@ -247,6 +253,9 @@ function MatchesTab() {
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 text-xs">
                       {match.home_team} vs {match.away_team}
+                      {!!match.is_playoff && (
+                        <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">Play Off</span>
+                      )}
                     </p>
                     <p className="text-[11px] text-gray-400">
                       {(() => { const d = new Date(match.kickoff); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; })()}
@@ -270,6 +279,17 @@ function MatchesTab() {
                       onChange={(e) => setResultInputs((prev) => ({ ...prev, [match.id]: { home: prev[match.id]?.home ?? '', away: e.target.value } }))}
                     />
                     <button onClick={() => handleSetResult(match.id)} className="btn-success btn-sm !text-[11px] !px-2 !py-1">Set</button>
+                    <button
+                      onClick={async () => {
+                        try {
+                          await api.updateMatch(match.id, { isPlayoff: !match.is_playoff });
+                          fetchMatches();
+                        } catch (err: any) { setError(err.message); }
+                      }}
+                      className={`btn-sm !text-[11px] !px-2 !py-1 ${match.is_playoff ? 'btn-primary' : 'btn-secondary'}`}
+                    >
+                      PO
+                    </button>
                     <button onClick={() => handleDeleteMatch(match.id)} className="btn-danger btn-sm !text-[11px] !px-2 !py-1">Del</button>
                   </div>
                 </div>

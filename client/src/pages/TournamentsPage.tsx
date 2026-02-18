@@ -24,6 +24,7 @@ interface Match {
   home_score: number | null;
   away_score: number | null;
   status: string;
+  is_playoff: number;
   tips_visible: number;
   tips: Record<number, { homeScore: number; awayScore: number }>;
 }
@@ -556,9 +557,16 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
                 {/* Compact match header */}
                 <div className="px-3 sm:px-4 py-2.5">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs text-gray-400">
-                      {formatDate(match.kickoff)}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-gray-400">
+                        {formatDate(match.kickoff)}
+                      </span>
+                      {!!match.is_playoff && (
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">
+                          Play Off
+                        </span>
+                      )}
+                    </div>
                     <span
                       className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
                         match.status === 'upcoming'

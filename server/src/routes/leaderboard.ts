@@ -71,21 +71,23 @@ router.get('/', authRequired, (req: Request, res: Response) => {
       if (!tip) return;
       tipsCount++;
 
+      const multiplier = match.is_playoff ? 2 : 1;
+
       const actualOutcome = match.home_score > match.away_score ? 'home'
         : match.home_score < match.away_score ? 'away' : 'draw';
       const tipOutcome = tip.home_score > tip.away_score ? 'home'
         : tip.home_score < tip.away_score ? 'away' : 'draw';
 
       if (tip.home_score === match.home_score && tip.away_score === match.away_score) {
-        totalPoints += rulesMap['exact_score'] || 5;
+        totalPoints += (rulesMap['exact_score'] || 5) * multiplier;
         exactScores++;
       } else if (
         (tip.home_score - tip.away_score) === (match.home_score - match.away_score)
       ) {
-        totalPoints += rulesMap['correct_goal_diff'] || 3;
+        totalPoints += (rulesMap['correct_goal_diff'] || 3) * multiplier;
         correctDiffs++;
       } else if (actualOutcome === tipOutcome) {
-        totalPoints += rulesMap['correct_outcome'] || 2;
+        totalPoints += (rulesMap['correct_outcome'] || 2) * multiplier;
         correctOutcomes++;
       }
     });

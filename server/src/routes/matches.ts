@@ -41,7 +41,7 @@ router.get('/', authRequired, (req: Request, res: Response) => {
 
 // Create a match (admin only)
 router.post('/', authRequired, adminRequired, (req: Request, res: Response) => {
-  const { homeTeam, awayTeam, kickoff, tournamentId } = req.body;
+  const { homeTeam, awayTeam, kickoff, tournamentId, isPlayoff } = req.body;
   if (!homeTeam || !awayTeam || !kickoff) {
     res.status(400).json({ error: 'Home team, away team, and kickoff time are required' });
     return;
@@ -49,8 +49,8 @@ router.post('/', authRequired, adminRequired, (req: Request, res: Response) => {
 
   const db = getDb();
   const result = db.prepare(
-    'INSERT INTO matches (home_team, away_team, kickoff, tournament_id) VALUES (?, ?, ?, ?)'
-  ).run(homeTeam, awayTeam, kickoff, tournamentId || null);
+    'INSERT INTO matches (home_team, away_team, kickoff, tournament_id, is_playoff) VALUES (?, ?, ?, ?, ?)'
+  ).run(homeTeam, awayTeam, kickoff, tournamentId || null, isPlayoff ? 1 : 0);
 
   res.status(201).json({
     id: result.lastInsertRowid,
@@ -58,6 +58,7 @@ router.post('/', authRequired, adminRequired, (req: Request, res: Response) => {
     away_team: awayTeam,
     kickoff,
     tournament_id: tournamentId || null,
+    is_playoff: isPlayoff ? 1 : 0,
     status: 'upcoming',
   });
 });
@@ -86,7 +87,7 @@ router.put('/:id/result', authRequired, adminRequired, (req: Request, res: Respo
 
 // Update match details (admin only)
 router.put('/:id', authRequired, adminRequired, (req: Request, res: Response) => {
-  const { homeTeam, awayTeam, kickoff, status } = req.body;
+  const { homeTeam, awayTeam, kickoff, status, isPlayoff } = req.body;
   const db = getDb();
   const match = db.prepare('SELECT * FROM matches WHERE id = ?').get(req.params.id);
   if (!match) {
@@ -100,6 +101,7 @@ router.put('/:id', authRequired, adminRequired, (req: Request, res: Response) =>
   if (awayTeam) { updates.push('away_team = ?'); values.push(awayTeam); }
   if (kickoff) { updates.push('kickoff = ?'); values.push(kickoff); }
   if (status) { updates.push('status = ?'); values.push(status); }
+  if (isPlayoff !== undefined) { updates.push('is_playoff = ?'); values.push(isPlayoff ? 1 : 0); }
 
   if (updates.length === 0) {
     res.status(400).json({ error: 'No fields to update' });
@@ -122,7 +124,7 @@ router.post('/import', authRequired, adminRequired, (req: Request, res: Response
 
   const db = getDb();
   const insert = db.prepare(
-    'INSERT INTO matches (home_team, away_team, kickoff, tournament_id) VALUES (?, ?, ?, ?)'
+    'INSERT INTO matches (home_team, away_team, kickoff, tournament_id, is_playoff) VALUES (?, ?, ?, ?, ?)'
   );
 
   const errors: string[] = [];
@@ -135,7 +137,7 @@ router.post('/import', authRequired, adminRequired, (req: Request, res: Response
         errors.push(`Row ${i + 1}: missing homeTeam, awayTeam, or kickoff`);
         continue;
       }
-      insert.run(m.homeTeam.trim(), m.awayTeam.trim(), m.kickoff.trim(), tournamentId || null);
+      insert.run(m.homeTeam.trim(), m.awayTeam.trim(), m.kickoff.trim(), tournamentId || null, m.isPlayoff ? 1 : 0);
       imported++;
     }
   });

@@ -124,6 +124,12 @@ function initializeDb(db: Database.Database) {
     db.exec('ALTER TABLE tournaments ADD COLUMN description TEXT');
   }
 
+  // v1.2.0: Add is_playoff column to matches
+  const matchColumnsV2 = db.prepare("PRAGMA table_info(matches)").all() as any[];
+  if (!matchColumnsV2.find((c: any) => c.name === 'is_playoff')) {
+    db.exec('ALTER TABLE matches ADD COLUMN is_playoff INTEGER NOT NULL DEFAULT 0');
+  }
+
   // v1.1.0: Add email and email_notifications columns to users
   const userColumns = db.prepare("PRAGMA table_info(users)").all() as any[];
   if (!userColumns.find((c: any) => c.name === 'email')) {
