@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/auth';
 import matchRoutes from './routes/matches';
 import tipRoutes from './routes/tips';
@@ -16,6 +17,26 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+
+// Rate limiting
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api', apiLimiter);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/forgot-password', authLimiter);
 
 // API routes
 app.use('/api/auth', authRoutes);
