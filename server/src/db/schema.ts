@@ -130,6 +130,12 @@ function initializeDb(db: Database.Database) {
     db.exec('ALTER TABLE matches ADD COLUMN is_playoff INTEGER NOT NULL DEFAULT 0');
   }
 
+  // v1.2.0: Add playoff_multiplier scoring rule if missing
+  const playoffRule = db.prepare("SELECT COUNT(*) as count FROM scoring_rules WHERE key = 'playoff_multiplier'").get() as { count: number };
+  if (playoffRule.count === 0) {
+    db.prepare('INSERT INTO scoring_rules (key, label, points) VALUES (?, ?, ?)').run('playoff_multiplier', 'Play Off multiplier', 2);
+  }
+
   // v1.1.0: Add email and email_notifications columns to users
   const userColumns = db.prepare("PRAGMA table_info(users)").all() as any[];
   if (!userColumns.find((c: any) => c.name === 'email')) {

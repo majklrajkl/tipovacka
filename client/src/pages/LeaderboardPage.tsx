@@ -219,7 +219,7 @@ export default function LeaderboardPage() {
           <div className="card p-4">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2.5">Scoring Rules</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              {rules.map((rule) => (
+              {rules.filter((r) => r.key !== 'playoff_multiplier').map((rule) => (
                 <div key={rule.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
                   <span className="text-xs text-gray-600">{rule.label}</span>
                   <span className="text-sm font-bold text-primary-600">{rule.points}pt{rule.points !== 1 ? 's' : ''}</span>
@@ -229,15 +229,17 @@ export default function LeaderboardPage() {
             {/* Play Off rules */}
             {(() => {
               const matchRules = rules.filter((r) => ['exact_score', 'correct_goal_diff', 'correct_outcome'].includes(r.key));
+              const multiplierRule = rules.find((r) => r.key === 'playoff_multiplier');
+              const multiplier = multiplierRule ? multiplierRule.points : 2;
               if (matchRules.length === 0) return null;
               return (
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                  <h3 className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-2">Play Off Matches (2x points)</h3>
+                  <h3 className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-2">Play Off Matches ({multiplier}x points)</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     {matchRules.map((rule) => (
                       <div key={`po-${rule.id}`} className="flex items-center justify-between bg-purple-50 rounded-lg px-3 py-2">
                         <span className="text-xs text-purple-700">{rule.label}</span>
-                        <span className="text-sm font-bold text-purple-600">{rule.points * 2}pt{rule.points * 2 !== 1 ? 's' : ''}</span>
+                        <span className="text-sm font-bold text-purple-600">{rule.points * multiplier}pt{rule.points * multiplier !== 1 ? 's' : ''}</span>
                       </div>
                     ))}
                   </div>

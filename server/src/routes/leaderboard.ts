@@ -71,7 +71,7 @@ router.get('/', authRequired, (req: Request, res: Response) => {
       if (!tip) return;
       tipsCount++;
 
-      const multiplier = match.is_playoff ? 2 : 1;
+      const multiplier = match.is_playoff ? (rulesMap['playoff_multiplier'] || 2) : 1;
 
       const actualOutcome = match.home_score > match.away_score ? 'home'
         : match.home_score < match.away_score ? 'away' : 'draw';

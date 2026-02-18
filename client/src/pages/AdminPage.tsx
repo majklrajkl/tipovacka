@@ -171,7 +171,7 @@ function MatchesTab() {
           </div>
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={isPlayoff} onChange={(e) => setIsPlayoff(e.target.checked)} className="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
-            <span className="text-xs font-medium text-gray-700">Play Off match (2x points)</span>
+            <span className="text-xs font-medium text-gray-700">Play Off match (multiplied points)</span>
           </label>
           <button type="submit" disabled={loading} className="btn-primary btn-sm">
             {loading ? 'Creating...' : 'Create Match'}
@@ -597,7 +597,7 @@ function ScoringTab() {
                 value={rule.points}
                 onChange={(e) => setRules((prev) => prev.map((r) => r.id === rule.id ? { ...r, points: Number(e.target.value) } : r))}
               />
-              <span className="text-[11px] text-gray-400">pts</span>
+              <span className="text-[11px] text-gray-400">{rule.key === 'playoff_multiplier' ? 'x' : 'pts'}</span>
               <button onClick={() => handleUpdate(rule.id, rule.points)} disabled={saving === rule.id} className="btn-primary btn-sm !text-[11px] !px-2 !py-1">
                 {saving === rule.id ? '...' : 'Save'}
               </button>
