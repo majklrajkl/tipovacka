@@ -614,6 +614,19 @@ function UsersTab() {
     fetchUsers();
   };
 
+  const handleDeleteUser = async (id: number) => {
+    if (!confirm('Delete this user? All their tips, tournament memberships, and data will be permanently removed.')) return;
+    setError('');
+    try {
+      await api.deleteUser(id);
+      setSuccess('User deleted');
+      setTimeout(() => setSuccess(''), 3000);
+      fetchUsers();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   const handleResetPassword = async (id: number) => {
     if (!newPassword || newPassword.length < 6) {
       setError('Password must be at least 6 characters');
@@ -686,6 +699,12 @@ function UsersTab() {
                       className="btn-secondary btn-sm !text-[11px] !px-2 !py-1"
                     >
                       Reset PW
+                    </button>
+                    <button
+                      onClick={() => handleDeleteUser(u.id)}
+                      className="btn-danger btn-sm !text-[11px] !px-2 !py-1"
+                    >
+                      Del
                     </button>
                   </>
                 )}

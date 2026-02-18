@@ -77,6 +77,24 @@ router.put('/users/:id/reset-password', authRequired, adminRequired, (req: Reque
   res.json({ message: 'Password reset successfully' });
 });
 
+// Delete user (admin only)
+router.delete('/users/:id', authRequired, adminRequired, (req: Request, res: Response) => {
+  const db = getDb();
+  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(req.params.id);
+  if (!user) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+
+  if (Number(req.params.id) === req.user!.userId) {
+    res.status(400).json({ error: 'Cannot delete your own account' });
+    return;
+  }
+
+  db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
+  res.json({ message: 'User deleted' });
+});
+
 // Get all tournament members (admin only)
 router.get('/tournament-members', authRequired, adminRequired, (req: Request, res: Response) => {
   const db = getDb();

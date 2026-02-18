@@ -116,6 +116,8 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify({ newPassword }),
     }),
+  deleteUser: (id: number) =>
+    request<any>(`/admin/users/${id}`, { method: 'DELETE' }),
   getTournamentMembers: () =>
     request<{ members: any[] }>('/admin/tournament-members'),
   toggleMemberPaid: (userId: number, tournamentId: number) =>
