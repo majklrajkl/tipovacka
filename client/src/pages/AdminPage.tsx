@@ -281,6 +281,64 @@ function MatchesTab() {
   );
 }
 
+function TeamAutocomplete({
+  value,
+  onChange,
+  teams,
+  placeholder,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  teams: string[];
+  placeholder: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  const filtered = value.trim()
+    ? teams.filter((t) => t.toLowerCase().includes(value.toLowerCase()))
+    : teams;
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <input
+        type="text"
+        className="input"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => { onChange(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
+      />
+      {open && filtered.length > 0 && (
+        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+          {filtered.map((team) => (
+            <button
+              key={team}
+              type="button"
+              className={`w-full text-left px-3 py-1.5 text-xs hover:bg-primary-50 transition-colors ${
+                team.toLowerCase() === value.toLowerCase() ? 'bg-primary-50 font-semibold text-primary-700' : 'text-gray-700'
+              }`}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => { onChange(team); setOpen(false); }}
+            >
+              {team}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function TournamentsTab() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -291,6 +349,7 @@ function TournamentsTab() {
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({ winnerTeam: '', bestScorer: '' });
+  const [editTeams, setEditTeams] = useState<string[]>([]);
   const [descEditId, setDescEditId] = useState<number | null>(null);
   const [descEdit, setDescEdit] = useState('');
 
@@ -303,6 +362,21 @@ function TournamentsTab() {
   useEffect(() => {
     fetchTournaments();
   }, []);
+
+  const openEditForm = async (t: any) => {
+    if (editingId === t.id) {
+      setEditingId(null);
+      return;
+    }
+    setEditingId(t.id);
+    setEditForm({ winnerTeam: t.winner_team || '', bestScorer: t.best_scorer || '' });
+    try {
+      const data = await api.getTournamentTeams(t.id);
+      setEditTeams(data.teams);
+    } catch {
+      setEditTeams([]);
+    }
+  };
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -323,14 +397,14 @@ function TournamentsTab() {
     }
   };
 
-  const handleSetResults = async (id: number) => {
+  const handleSetResults = async (id: number, finish: boolean) => {
     try {
       await api.updateTournament(id, {
-        status: 'finished',
+        ...(finish ? { status: 'finished' } : {}),
         winnerTeam: editForm.winnerTeam,
         bestScorer: editForm.bestScorer,
       });
-      setSuccess('Tournament results set');
+      setSuccess(finish ? 'Tournament finished & results set' : 'Tournament results updated');
       setEditingId(null);
       setTimeout(() => setSuccess(''), 2000);
       fetchTournaments();
@@ -415,7 +489,7 @@ function TournamentsTab() {
                       <span className={t.status === 'active' ? 'text-emerald-500 font-medium' : 'text-gray-500'}>{t.status}</span>
                       {t.winner_team && (
                         <span className="ml-1 text-gray-500">
-                          (Winner: {t.winner_team})
+                          (Winner: {t.winner_team}{t.best_scorer ? `, Scorer: ${t.best_scorer}` : ''})
                         </span>
                       )}
                     </p>
@@ -437,15 +511,19 @@ function TournamentsTab() {
                     >
                       Desc
                     </button>
-                    {t.status === 'active' && (
+                    {t.status === 'active' ? (
                       <button
-                        onClick={() => {
-                          setEditingId(editingId === t.id ? null : t.id);
-                          setEditForm({ winnerTeam: t.winner_team || '', bestScorer: t.best_scorer || '' });
-                        }}
+                        onClick={() => openEditForm(t)}
                         className="btn-primary btn-sm !text-[11px]"
                       >
                         Finish
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => openEditForm(t)}
+                        className="btn-secondary btn-sm !text-[11px]"
+                      >
+                        Edit Results
                       </button>
                     )}
                     <button onClick={() => handleDelete(t.id)} className="btn-danger btn-sm !text-[11px]">Del</button>
@@ -467,7 +545,12 @@ function TournamentsTab() {
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <label className="label">Winning Team</label>
-                        <input type="text" className="input" placeholder="e.g. Finland" value={editForm.winnerTeam} onChange={(e) => setEditForm({ ...editForm, winnerTeam: e.target.value })} />
+                        <TeamAutocomplete
+                          value={editForm.winnerTeam}
+                          onChange={(val) => setEditForm({ ...editForm, winnerTeam: val })}
+                          teams={editTeams}
+                          placeholder="e.g. Finland"
+                        />
                       </div>
                       <div>
                         <label className="label">Best Scorer</label>
@@ -475,9 +558,15 @@ function TournamentsTab() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => handleSetResults(t.id)} disabled={!editForm.winnerTeam.trim() || !editForm.bestScorer.trim()} className="btn-success btn-sm !text-[11px]">
-                        Finish & Set Results
-                      </button>
+                      {t.status === 'active' ? (
+                        <button onClick={() => handleSetResults(t.id, true)} disabled={!editForm.winnerTeam.trim() || !editForm.bestScorer.trim()} className="btn-success btn-sm !text-[11px]">
+                          Finish & Set Results
+                        </button>
+                      ) : (
+                        <button onClick={() => handleSetResults(t.id, false)} disabled={!editForm.winnerTeam.trim() || !editForm.bestScorer.trim()} className="btn-success btn-sm !text-[11px]">
+                          Update Results
+                        </button>
+                      )}
                       <button onClick={() => setEditingId(null)} className="btn-secondary btn-sm !text-[11px]">Cancel</button>
                     </div>
                   </div>

@@ -207,6 +207,20 @@ router.put('/:id', authRequired, adminRequired, (req: Request, res: Response) =>
   res.json({ message: 'Tournament updated' });
 });
 
+// Get distinct team names for a tournament (admin only)
+router.get('/:id/teams', authRequired, adminRequired, (req: Request, res: Response) => {
+  const db = getDb();
+  const teams = db.prepare(`
+    SELECT DISTINCT team FROM (
+      SELECT home_team AS team FROM matches WHERE tournament_id = ?
+      UNION
+      SELECT away_team AS team FROM matches WHERE tournament_id = ?
+    ) ORDER BY team ASC
+  `).all(req.params.id, req.params.id) as any[];
+
+  res.json({ teams: teams.map((t: any) => t.team) });
+});
+
 // Delete tournament (admin only)
 router.delete('/:id', authRequired, adminRequired, (req: Request, res: Response) => {
   const db = getDb();

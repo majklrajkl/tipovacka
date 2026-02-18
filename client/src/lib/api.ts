@@ -128,6 +128,8 @@ export const api = {
     request<any>(`/tournaments/${id}/join`, { method: 'POST' }),
   leaveTournament: (id: number) =>
     request<any>(`/tournaments/${id}/leave`, { method: 'POST' }),
+  getTournamentTeams: (id: number) =>
+    request<{ teams: string[] }>(`/tournaments/${id}/teams`),
   submitTournamentTip: (tournamentId: number, winningTeam: string, bestScorer: string) =>
     request<any>(`/tournaments/${tournamentId}/tips`, {
       method: 'POST',
