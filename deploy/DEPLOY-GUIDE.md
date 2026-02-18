@@ -239,23 +239,84 @@ Certbot automatically configures nginx for HTTPS. It also auto-renews.
 
 ## Updating Your App (After Making Changes)
 
-When you push new code to GitHub and want to update the server:
+When I (or you) make changes to the code and push them to GitHub, here's how to
+get those changes live on your server. **Do this every time you want to update.**
+
+### Step 1: Connect to your server
+
+Open Terminal (Mac/Linux) or PowerShell (Windows) and SSH in:
+
+```bash
+ssh -i ~/Downloads/tipovacka-key.pem ubuntu@YOUR_IP
+```
+
+### Step 2: Go to the app folder
 
 ```bash
 cd /home/ubuntu/tipovacka
+```
 
-# Pull latest code
+### Step 3: Pull the latest code from GitHub
+
+```bash
 git pull
+```
 
-# Reinstall dependencies (only if package.json changed)
+You should see a list of changed files. If it says "Already up to date" there's
+nothing new to deploy.
+
+### Step 4: Install dependencies
+
+Only needed if I tell you that new packages were added. If unsure, just run it
+anyway — it's harmless and takes a few seconds if nothing changed:
+
+```bash
 npm run install:all
+```
 
-# Rebuild
+### Step 5: Rebuild the app
+
+This compiles the new code. **Always do this after pulling.**
+
+```bash
 npm run build
+```
 
-# Restart the app
+This takes about 30-60 seconds. Wait for it to finish without errors.
+
+### Step 6: Restart the app
+
+```bash
 pm2 restart tipovacka
 ```
+
+### Step 7: Verify it's running
+
+```bash
+pm2 status
+```
+
+You should see `tipovacka` with status **online**. Now open https://tipovacka.eu
+in your browser and check that everything works.
+
+### Quick copy-paste version
+
+If you want to do it all in one go, here's everything as a single command:
+
+```bash
+cd /home/ubuntu/tipovacka && git pull && npm run install:all && npm run build && pm2 restart tipovacka && pm2 status
+```
+
+### If something goes wrong
+
+If the site doesn't load after updating:
+
+```bash
+# Check the app logs for errors
+pm2 logs tipovacka --lines 30
+```
+
+If you see an error, let me know what it says and I'll help you fix it.
 
 ---
 
