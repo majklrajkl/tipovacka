@@ -116,7 +116,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <footer className="border-t border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
           <p className="text-center text-xs text-gray-400">
-            Tipovacka
+            Tipovacka <span className="text-gray-300">v{__APP_VERSION__}</span>
           </p>
         </div>
       </footer>
