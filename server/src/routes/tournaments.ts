@@ -210,11 +210,12 @@ router.put('/:id', authRequired, adminRequired, (req: Request, res: Response) =>
 // Get distinct team names for a tournament (admin only)
 router.get('/:id/teams', authRequired, adminRequired, (req: Request, res: Response) => {
   const db = getDb();
+  // Only return real country names — exclude placeholder matches (QF1 vs QF1, etc.)
   const teams = db.prepare(`
     SELECT DISTINCT team FROM (
-      SELECT home_team AS team FROM matches WHERE tournament_id = ?
+      SELECT home_team AS team FROM matches WHERE tournament_id = ? AND home_team != away_team
       UNION
-      SELECT away_team AS team FROM matches WHERE tournament_id = ?
+      SELECT away_team AS team FROM matches WHERE tournament_id = ? AND home_team != away_team
     ) ORDER BY team ASC
   `).all(req.params.id, req.params.id) as any[];
 

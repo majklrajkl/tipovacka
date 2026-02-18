@@ -309,7 +309,12 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
 
   const teamNames = useMemo(() => {
     const names = new Set<string>();
-    matches.forEach((m) => { names.add(m.home_team); names.add(m.away_team); });
+    matches.forEach((m) => {
+      // Skip placeholder matches (e.g. QF1 vs QF1, Bronze vs Bronze)
+      if (m.home_team === m.away_team) return;
+      names.add(m.home_team);
+      names.add(m.away_team);
+    });
     return Array.from(names).sort();
   }, [matches]);
 
