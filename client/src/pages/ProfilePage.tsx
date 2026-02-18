@@ -3,13 +3,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api';
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [notifLoading, setNotifLoading] = useState(false);
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +34,18 @@ export default function ProfilePage() {
     }
   };
 
+  const handleToggleNotifications = async () => {
+    setNotifLoading(true);
+    try {
+      await api.updateNotifications(!user?.emailNotifications);
+      await refreshUser();
+    } catch (err: any) {
+      console.error('Failed to update notifications:', err);
+    } finally {
+      setNotifLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-lg mx-auto space-y-6">
       <div>
@@ -48,11 +61,41 @@ export default function ProfilePage() {
             <span className="text-sm font-medium text-gray-900">{user?.username}</span>
           </div>
           <div className="flex justify-between items-center py-2 border-b border-gray-100">
+            <span className="text-sm text-gray-500">Email</span>
+            <span className="text-sm font-medium text-gray-900">{user?.email || '—'}</span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b border-gray-100">
             <span className="text-sm text-gray-500">Role</span>
             <span className={`text-sm font-medium ${user?.isAdmin ? 'text-primary-600' : 'text-gray-900'}`}>
               {user?.isAdmin ? 'Admin' : 'Player'}
             </span>
           </div>
+        </div>
+      </div>
+
+      <div className="card p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Notifications</h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-900">Match Reminders</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Get an email 1 hour before matches you haven't tipped yet
+            </p>
+          </div>
+          <button
+            type="button"
+            disabled={notifLoading}
+            onClick={handleToggleNotifications}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+              user?.emailNotifications ? 'bg-primary-600' : 'bg-gray-300'
+            } ${notifLoading ? 'opacity-50' : ''}`}
+          >
+            <span
+              className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
+                user?.emailNotifications ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
         </div>
       </div>
 

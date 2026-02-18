@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 export default function RegisterPage() {
   const { register } = useAuth();
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,7 +20,7 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      await register(username, password);
+      await register(username, password, email);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -55,6 +56,17 @@ export default function RegisterPage() {
                 placeholder="Choose a username (3-30 chars)"
                 required
                 autoFocus
+              />
+            </div>
+            <div>
+              <label className="label">Email</label>
+              <input
+                type="email"
+                className="input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                required
               />
             </div>
             <div>

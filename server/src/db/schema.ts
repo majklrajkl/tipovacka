@@ -124,6 +124,41 @@ function initializeDb(db: Database.Database) {
     db.exec('ALTER TABLE tournaments ADD COLUMN description TEXT');
   }
 
+  // v1.1.0: Add email and email_notifications columns to users
+  const userColumns = db.prepare("PRAGMA table_info(users)").all() as any[];
+  if (!userColumns.find((c: any) => c.name === 'email')) {
+    db.exec("ALTER TABLE users ADD COLUMN email TEXT");
+  }
+  if (!userColumns.find((c: any) => c.name === 'email_notifications')) {
+    db.exec("ALTER TABLE users ADD COLUMN email_notifications INTEGER NOT NULL DEFAULT 1");
+  }
+
+  // v1.1.0: Password reset tokens table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      token TEXT UNIQUE NOT NULL,
+      expires_at TEXT NOT NULL,
+      used INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `);
+
+  // v1.1.0: Track sent reminders to avoid duplicates
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS sent_reminders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      match_id INTEGER NOT NULL,
+      sent_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE,
+      UNIQUE(user_id, match_id)
+    );
+  `);
+
   // Seed default admin user if no users exist
   const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
   if (userCount.count === 0) {

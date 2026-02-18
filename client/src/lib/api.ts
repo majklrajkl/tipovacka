@@ -36,15 +36,30 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     }),
-  register: (username: string, password: string) =>
+  register: (username: string, password: string, email: string) =>
     request<{ token: string; user: any }>('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, email }),
     }),
   changePassword: (currentPassword: string, newPassword: string) =>
     request<{ message: string }>('/auth/change-password', {
       method: 'POST',
       body: JSON.stringify({ currentPassword, newPassword }),
+    }),
+  forgotPassword: (email: string) =>
+    request<{ message: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+  resetPassword: (token: string, newPassword: string) =>
+    request<{ message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, newPassword }),
+    }),
+  updateNotifications: (emailNotifications: boolean) =>
+    request<{ message: string }>('/auth/notifications', {
+      method: 'PUT',
+      body: JSON.stringify({ emailNotifications }),
     }),
   getMe: () => request<{ user: any }>('/auth/me'),
 

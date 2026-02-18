@@ -7,6 +7,7 @@ import tipRoutes from './routes/tips';
 import leaderboardRoutes from './routes/leaderboard';
 import adminRoutes from './routes/admin';
 import tournamentRoutes from './routes/tournaments';
+import { startScheduler } from './lib/scheduler';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -31,4 +32,5 @@ app.get('*', (_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  startScheduler();
 });

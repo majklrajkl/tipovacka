@@ -5,14 +5,17 @@ interface User {
   id: number;
   username: string;
   isAdmin: boolean;
+  email?: string;
+  emailNotifications?: boolean;
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string) => Promise<void>;
+  register: (username: string, password: string, email: string) => Promise<void>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -20,6 +23,11 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const refreshUser = useCallback(async () => {
+    const { user } = await api.getMe();
+    setUser(user);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -39,8 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(user);
   }, []);
 
-  const register = useCallback(async (username: string, password: string) => {
-    const { token, user } = await api.register(username, password);
+  const register = useCallback(async (username: string, password: string, email: string) => {
+    const { token, user } = await api.register(username, password, email);
     localStorage.setItem('token', token);
     setUser(user);
   }, []);
@@ -51,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
