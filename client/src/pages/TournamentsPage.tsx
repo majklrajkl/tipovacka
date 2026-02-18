@@ -632,7 +632,7 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
                     <p className="text-[11px] text-gray-400 italic">No tip</p>
                   )}
 
-                  {match.tips_visible && otherUsers.length > 0 && (
+                  {!!match.tips_visible && otherUsers.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {otherUsers.map((u) => {
                         const tip = match.tips[u.id];

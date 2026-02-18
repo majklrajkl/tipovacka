@@ -93,7 +93,7 @@ router.post('/change-password', authRequired, (req: Request, res: Response) => {
 });
 
 router.get('/me', authRequired, (req: Request, res: Response) => {
-  res.json({ user: req.user });
+  res.json({ user: { id: req.user!.userId, username: req.user!.username, isAdmin: req.user!.isAdmin } });
 });
 
 export default router;
