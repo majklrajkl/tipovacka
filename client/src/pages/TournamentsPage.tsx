@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { api } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
+import TeamAutocomplete from '../components/TeamAutocomplete';
 
 interface Tournament {
   id: number;
@@ -306,6 +307,12 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
     return true;
   });
 
+  const teamNames = useMemo(() => {
+    const names = new Set<string>();
+    matches.forEach((m) => { names.add(m.home_team); names.add(m.away_team); });
+    return Array.from(names).sort();
+  }, [matches]);
+
   const otherUsers = users.filter((u) => u.id !== user!.id);
 
   if (loading) {
@@ -397,12 +404,11 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
             <div className="grid grid-cols-2 gap-2.5">
               <div>
                 <label className="label">Winning Team</label>
-                <input
-                  type="text"
-                  className="input"
-                  placeholder="e.g. Finland"
+                <TeamAutocomplete
                   value={winningTeam}
-                  onChange={(e) => setWinningTeam(e.target.value)}
+                  onChange={setWinningTeam}
+                  teams={teamNames}
+                  placeholder="e.g. Finland"
                 />
               </div>
               <div>
