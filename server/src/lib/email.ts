@@ -15,6 +15,32 @@ const transporter = nodemailer.createTransport({
 const FROM = process.env.SMTP_FROM || 'Tipovacka <noreply@tipovacka.app>';
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 
+export async function verifySmtpConnection(): Promise<boolean> {
+  try {
+    await transporter.verify();
+    console.log('SMTP connection verified — emails will work.');
+    return true;
+  } catch (err) {
+    console.error('SMTP connection FAILED:', err);
+    return false;
+  }
+}
+
+export async function sendTestEmail(to: string): Promise<void> {
+  await transporter.sendMail({
+    from: FROM,
+    to,
+    subject: 'Tipovacka — Test Email',
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2>It works!</h2>
+        <p>If you're reading this, your Tipovacka email configuration is correct.</p>
+        <p style="color: #888; font-size: 13px;">Sent at ${new Date().toISOString()}</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendPasswordResetEmail(email: string, token: string): Promise<void> {
   const resetUrl = `${APP_URL}/reset-password?token=${token}`;
 

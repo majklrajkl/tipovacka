@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { getDb } from '../db/schema';
 import { signToken, authRequired } from '../middleware/auth';
-import { sendPasswordResetEmail } from '../lib/email';
+import { sendPasswordResetEmail, sendTestEmail } from '../lib/email';
 
 const router = Router();
 
@@ -195,6 +195,27 @@ router.put('/notifications', authRequired, (req: Request, res: Response) => {
   db.prepare('UPDATE users SET email_notifications = ? WHERE id = ?').run(emailNotifications ? 1 : 0, req.user!.userId);
 
   res.json({ message: 'Notification preferences updated' });
+});
+
+router.post('/test-email', authRequired, async (req: Request, res: Response) => {
+  if (!req.user!.isAdmin) {
+    res.status(403).json({ error: 'Admin only' });
+    return;
+  }
+
+  const { to } = req.body;
+  if (!to) {
+    res.status(400).json({ error: 'Provide "to" email address' });
+    return;
+  }
+
+  try {
+    await sendTestEmail(to);
+    res.json({ message: `Test email sent to ${to}` });
+  } catch (err: any) {
+    console.error('Test email failed:', err);
+    res.status(500).json({ error: `Email failed: ${err.message}` });
+  }
 });
 
 export default router;
