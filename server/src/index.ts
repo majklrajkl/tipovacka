@@ -17,8 +17,21 @@ import { verifySmtpConnection } from './lib/email';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Security headers
-app.use(helmet());
+// Security headers — relax CSP for Vite's inline scripts/styles
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+      },
+    },
+  })
+);
 
 // CORS — restrict to allowed origins
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
