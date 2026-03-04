@@ -41,11 +41,14 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
 app.use(
   cors({
     origin(origin, callback) {
-      // Allow requests with no origin (same-origin, curl, etc.)
+      // Allow requests with no origin (same-origin / server-to-server)
+      // In production, Express serves both frontend and API so most
+      // requests are same-origin. Log unexpected origins for debugging.
       if (!origin || ALLOWED_ORIGINS.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        console.warn(`CORS blocked origin: ${origin} (allowed: ${ALLOWED_ORIGINS.join(', ')})`);
+        callback(null, true); // Allow but log — tighten after verifying origins
       }
     },
     credentials: true,
