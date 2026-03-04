@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { getDb } from '../db/schema';
-import { authRequired, adminRequired } from '../middleware/auth';
+import { authRequired, adminRequired, csrfProtection } from '../middleware/auth';
 
 const router = Router();
 
@@ -122,7 +122,7 @@ router.get('/:id', authRequired, (req: Request, res: Response) => {
 });
 
 // Join a tournament
-router.post('/:id/join', authRequired, (req: Request, res: Response) => {
+router.post('/:id/join', authRequired, csrfProtection, (req: Request, res: Response) => {
   const db = getDb();
   const tournament = db.prepare('SELECT * FROM tournaments WHERE id = ?').get(req.params.id);
   if (!tournament) {
@@ -147,7 +147,7 @@ router.post('/:id/join', authRequired, (req: Request, res: Response) => {
 });
 
 // Leave a tournament
-router.post('/:id/leave', authRequired, (req: Request, res: Response) => {
+router.post('/:id/leave', authRequired, csrfProtection, (req: Request, res: Response) => {
   const db = getDb();
   db.prepare(
     'DELETE FROM tournament_members WHERE user_id = ? AND tournament_id = ?'
@@ -157,7 +157,7 @@ router.post('/:id/leave', authRequired, (req: Request, res: Response) => {
 });
 
 // Create tournament (admin only)
-router.post('/', authRequired, adminRequired, (req: Request, res: Response) => {
+router.post('/', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const { name, description } = req.body;
   if (!name || !name.trim()) {
     res.status(400).json({ error: 'Tournament name is required' });
@@ -178,7 +178,7 @@ router.post('/', authRequired, adminRequired, (req: Request, res: Response) => {
 });
 
 // Update tournament (admin only)
-router.put('/:id', authRequired, adminRequired, (req: Request, res: Response) => {
+router.put('/:id', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const { name, status, winnerTeam, bestScorer, description } = req.body;
   const db = getDb();
 
@@ -223,7 +223,7 @@ router.get('/:id/teams', authRequired, adminRequired, (req: Request, res: Respon
 });
 
 // Delete tournament (admin only)
-router.delete('/:id', authRequired, adminRequired, (req: Request, res: Response) => {
+router.delete('/:id', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const db = getDb();
   db.prepare('UPDATE matches SET tournament_id = NULL WHERE tournament_id = ?').run(req.params.id);
   db.prepare('DELETE FROM tournament_members WHERE tournament_id = ?').run(req.params.id);
@@ -232,7 +232,7 @@ router.delete('/:id', authRequired, adminRequired, (req: Request, res: Response)
 });
 
 // Submit or update tournament tip
-router.post('/:id/tips', authRequired, (req: Request, res: Response) => {
+router.post('/:id/tips', authRequired, csrfProtection, (req: Request, res: Response) => {
   const { winningTeam, bestScorer } = req.body;
   if (!winningTeam || !bestScorer) {
     res.status(400).json({ error: 'Winning team and best scorer are required' });

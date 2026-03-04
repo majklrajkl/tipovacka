@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token') || '';
+  const navigate = useNavigate();
+  const tokenRef = useRef(searchParams.get('token') || '');
+  const token = tokenRef.current;
+
+  // Clean token from URL to prevent exposure in browser history / referrer
+  useEffect(() => {
+    if (searchParams.has('token')) {
+      navigate('/reset-password', { replace: true });
+    }
+  }, [searchParams, navigate]);
 
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

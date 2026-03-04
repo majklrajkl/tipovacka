@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { getDb } from '../db/schema';
-import { authRequired } from '../middleware/auth';
+import { authRequired, csrfProtection } from '../middleware/auth';
 
 const router = Router();
 
 // Submit or update a tip
-router.post('/', authRequired, (req: Request, res: Response) => {
+router.post('/', authRequired, csrfProtection, (req: Request, res: Response) => {
   const { matchId, homeScore, awayScore } = req.body;
   if (matchId == null || homeScore == null || awayScore == null) {
     res.status(400).json({ error: 'Match ID, home score, and away score are required' });

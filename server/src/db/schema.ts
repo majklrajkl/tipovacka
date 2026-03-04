@@ -171,12 +171,46 @@ function initializeDb(db: Database.Database) {
     );
   `);
 
-  // Seed default admin user if no users exist
+  // Seed admin user from environment variables if no users exist
   const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
   if (userCount.count === 0) {
-    const hash = bcrypt.hashSync('admin123', 10);
-    db.prepare('INSERT INTO users (username, password, is_admin) VALUES (?, ?, 1)').run('admin', hash);
+    const adminUser = process.env.ADMIN_USERNAME;
+    const adminPass = process.env.ADMIN_PASSWORD;
+    const adminEmail = process.env.ADMIN_EMAIL;
+    if (adminUser && adminPass && adminPass.length >= 6) {
+      const hash = bcrypt.hashSync(adminPass, 10);
+      db.prepare('INSERT INTO users (username, password, is_admin, email) VALUES (?, ?, 1, ?)').run(adminUser, hash, adminEmail || null);
+      console.log(`Initial admin user "${adminUser}" created from environment variables.`);
+    } else {
+      console.warn(
+        'No users exist. Set ADMIN_USERNAME, ADMIN_PASSWORD (min 6 chars), and optionally ADMIN_EMAIL in .env to create the initial admin.'
+      );
+    }
   }
+
+  // v1.3.0: Add login lockout columns to users
+  const userColsV3 = db.prepare("PRAGMA table_info(users)").all() as any[];
+  if (!userColsV3.find((c: any) => c.name === 'failed_login_attempts')) {
+    db.exec("ALTER TABLE users ADD COLUMN failed_login_attempts INTEGER NOT NULL DEFAULT 0");
+  }
+  if (!userColsV3.find((c: any) => c.name === 'locked_until')) {
+    db.exec("ALTER TABLE users ADD COLUMN locked_until TEXT");
+  }
+
+  // v1.3.0: Audit log table for admin actions
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS audit_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      admin_user_id INTEGER NOT NULL,
+      admin_username TEXT NOT NULL,
+      action TEXT NOT NULL,
+      target_type TEXT,
+      target_id INTEGER,
+      details TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (admin_user_id) REFERENCES users(id) ON DELETE SET NULL
+    );
+  `);
 
   // Seed "MS Hokej 2026" tournament if no tournaments exist
   const tournamentCount = db.prepare('SELECT COUNT(*) as count FROM tournaments').get() as { count: number };

@@ -30,31 +30,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      api.getMe()
-        .then(({ user }) => setUser(user))
-        .catch(() => localStorage.removeItem('token'))
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+    // Check if we have a valid session via httpOnly cookie
+    api.getMe()
+      .then(({ user }) => setUser(user))
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
   }, []);
 
   const login = useCallback(async (username: string, password: string) => {
-    const { token, user } = await api.login(username, password);
-    localStorage.setItem('token', token);
+    const { user } = await api.login(username, password);
     setUser(user);
   }, []);
 
   const register = useCallback(async (username: string, password: string, email: string) => {
-    const { token, user } = await api.register(username, password, email);
-    localStorage.setItem('token', token);
+    const { user } = await api.register(username, password, email);
     setUser(user);
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('token');
+  const logout = useCallback(async () => {
+    try {
+      await api.logout();
+    } catch {
+      // Clear state even if the server call fails
+    }
     setUser(null);
   }, []);
 

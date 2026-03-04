@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { getDb } from '../db/schema';
-import { authRequired, adminRequired } from '../middleware/auth';
+import { authRequired, adminRequired, csrfProtection } from '../middleware/auth';
 
 const router = Router();
 
@@ -40,7 +40,7 @@ router.get('/', authRequired, (req: Request, res: Response) => {
 });
 
 // Create a match (admin only)
-router.post('/', authRequired, adminRequired, (req: Request, res: Response) => {
+router.post('/', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const { homeTeam, awayTeam, kickoff, tournamentId, isPlayoff } = req.body;
   if (!homeTeam || !awayTeam || !kickoff) {
     res.status(400).json({ error: 'Home team, away team, and kickoff time are required' });
@@ -64,7 +64,7 @@ router.post('/', authRequired, adminRequired, (req: Request, res: Response) => {
 });
 
 // Update match result (admin only)
-router.put('/:id/result', authRequired, adminRequired, (req: Request, res: Response) => {
+router.put('/:id/result', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const { homeScore, awayScore, status } = req.body;
   if (homeScore == null || awayScore == null) {
     res.status(400).json({ error: 'Home score and away score are required' });
@@ -86,7 +86,7 @@ router.put('/:id/result', authRequired, adminRequired, (req: Request, res: Respo
 });
 
 // Update match details (admin only)
-router.put('/:id', authRequired, adminRequired, (req: Request, res: Response) => {
+router.put('/:id', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const { homeTeam, awayTeam, kickoff, status, isPlayoff } = req.body;
   const db = getDb();
   const match = db.prepare('SELECT * FROM matches WHERE id = ?').get(req.params.id);
@@ -115,7 +115,7 @@ router.put('/:id', authRequired, adminRequired, (req: Request, res: Response) =>
 });
 
 // Bulk import matches (admin only)
-router.post('/import', authRequired, adminRequired, (req: Request, res: Response) => {
+router.post('/import', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const { matches, tournamentId } = req.body;
   if (!Array.isArray(matches) || matches.length === 0) {
     res.status(400).json({ error: 'An array of matches is required' });
@@ -148,7 +148,7 @@ router.post('/import', authRequired, adminRequired, (req: Request, res: Response
 });
 
 // Delete match (admin only)
-router.delete('/:id', authRequired, adminRequired, (req: Request, res: Response) => {
+router.delete('/:id', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const db = getDb();
   db.prepare('DELETE FROM matches WHERE id = ?').run(req.params.id);
   res.json({ message: 'Match deleted' });

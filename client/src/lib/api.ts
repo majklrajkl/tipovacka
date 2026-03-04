@@ -1,25 +1,32 @@
 const API_BASE = '/api';
 
-function getToken(): string | null {
-  return localStorage.getItem('token');
+function getCsrfToken(): string | null {
+  const match = document.cookie.match(/(?:^|;\s*)csrf=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
 async function request<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const token = getToken();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...((options.headers as Record<string, string>) || {}),
   };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+
+  // Attach CSRF token for state-changing requests
+  const method = (options.method || 'GET').toUpperCase();
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+    const csrf = getCsrfToken();
+    if (csrf) {
+      headers['X-CSRF-Token'] = csrf;
+    }
   }
 
   const res = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     headers,
+    credentials: 'include',
   });
 
   const data = await res.json();
@@ -32,15 +39,17 @@ async function request<T>(
 export const api = {
   // Auth
   login: (username: string, password: string) =>
-    request<{ token: string; user: any }>('/auth/login', {
+    request<{ user: any }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     }),
   register: (username: string, password: string, email: string) =>
-    request<{ token: string; user: any }>('/auth/register', {
+    request<{ user: any }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ username, password, email }),
     }),
+  logout: () =>
+    request<{ message: string }>('/auth/logout', { method: 'POST' }),
   changePassword: (currentPassword: string, newPassword: string) =>
     request<{ message: string }>('/auth/change-password', {
       method: 'POST',
@@ -151,5 +160,10 @@ export const api = {
     request<any>(`/tournaments/${tournamentId}/tips`, {
       method: 'POST',
       body: JSON.stringify({ winningTeam, bestScorer }),
+    }),
+  sendTestEmail: (to: string) =>
+    request<{ message: string }>('/auth/test-email', {
+      method: 'POST',
+      body: JSON.stringify({ to }),
     }),
 };

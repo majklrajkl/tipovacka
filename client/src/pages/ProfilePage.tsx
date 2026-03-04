@@ -40,7 +40,7 @@ export default function ProfilePage() {
       await api.updateNotifications(!user?.emailNotifications);
       await refreshUser();
     } catch (err: any) {
-      console.error('Failed to update notifications:', err);
+      console.error('Failed to update notifications');
     } finally {
       setNotifLoading(false);
     }

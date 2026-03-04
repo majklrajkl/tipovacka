@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { getDb } from '../db/schema';
-import { authRequired, adminRequired } from '../middleware/auth';
+import { authRequired, adminRequired, csrfProtection } from '../middleware/auth';
+import { auditLog } from './auth';
 
 const router = Router();
 
@@ -13,7 +14,7 @@ router.get('/scoring-rules', authRequired, (req: Request, res: Response) => {
 });
 
 // Update scoring rule
-router.put('/scoring-rules/:id', authRequired, adminRequired, (req: Request, res: Response) => {
+router.put('/scoring-rules/:id', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const { points } = req.body;
   if (points == null || points < 0) {
     res.status(400).json({ error: 'Valid points value is required' });
@@ -21,13 +22,14 @@ router.put('/scoring-rules/:id', authRequired, adminRequired, (req: Request, res
   }
 
   const db = getDb();
-  const rule = db.prepare('SELECT * FROM scoring_rules WHERE id = ?').get(req.params.id);
+  const rule = db.prepare('SELECT * FROM scoring_rules WHERE id = ?').get(req.params.id) as any;
   if (!rule) {
     res.status(404).json({ error: 'Scoring rule not found' });
     return;
   }
 
   db.prepare('UPDATE scoring_rules SET points = ? WHERE id = ?').run(points, req.params.id);
+  auditLog(req.user!.userId, req.user!.username, 'update_scoring_rule', 'scoring_rule', Number(req.params.id), `Set points to ${points}`);
   res.json({ message: 'Scoring rule updated' });
 });
 
@@ -39,7 +41,7 @@ router.get('/users', authRequired, adminRequired, (req: Request, res: Response) 
 });
 
 // Toggle admin status
-router.put('/users/:id/toggle-admin', authRequired, adminRequired, (req: Request, res: Response) => {
+router.put('/users/:id/toggle-admin', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const db = getDb();
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id) as any;
   if (!user) {
@@ -53,12 +55,14 @@ router.put('/users/:id/toggle-admin', authRequired, adminRequired, (req: Request
     return;
   }
 
-  db.prepare('UPDATE users SET is_admin = ? WHERE id = ?').run(user.is_admin ? 0 : 1, user.id);
+  const newStatus = user.is_admin ? 0 : 1;
+  db.prepare('UPDATE users SET is_admin = ? WHERE id = ?').run(newStatus, user.id);
+  auditLog(req.user!.userId, req.user!.username, 'toggle_admin', 'user', user.id, `Set admin=${!!newStatus} for ${user.username}`);
   res.json({ message: 'User admin status updated' });
 });
 
 // Reset/set user password (admin only)
-router.put('/users/:id/reset-password', authRequired, adminRequired, (req: Request, res: Response) => {
+router.put('/users/:id/reset-password', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const { newPassword } = req.body;
   if (!newPassword || newPassword.length < 6) {
     res.status(400).json({ error: 'New password must be at least 6 characters' });
@@ -66,7 +70,7 @@ router.put('/users/:id/reset-password', authRequired, adminRequired, (req: Reque
   }
 
   const db = getDb();
-  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(req.params.id);
+  const user = db.prepare('SELECT id, username FROM users WHERE id = ?').get(req.params.id) as any;
   if (!user) {
     res.status(404).json({ error: 'User not found' });
     return;
@@ -74,13 +78,14 @@ router.put('/users/:id/reset-password', authRequired, adminRequired, (req: Reque
 
   const hash = bcrypt.hashSync(newPassword, 10);
   db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hash, req.params.id);
+  auditLog(req.user!.userId, req.user!.username, 'reset_user_password', 'user', user.id, `Reset password for ${user.username}`);
   res.json({ message: 'Password reset successfully' });
 });
 
 // Delete user (admin only)
-router.delete('/users/:id', authRequired, adminRequired, (req: Request, res: Response) => {
+router.delete('/users/:id', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const db = getDb();
-  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(req.params.id);
+  const user = db.prepare('SELECT id, username FROM users WHERE id = ?').get(req.params.id) as any;
   if (!user) {
     res.status(404).json({ error: 'User not found' });
     return;
@@ -92,6 +97,7 @@ router.delete('/users/:id', authRequired, adminRequired, (req: Request, res: Res
   }
 
   db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
+  auditLog(req.user!.userId, req.user!.username, 'delete_user', 'user', user.id, `Deleted user ${user.username}`);
   res.json({ message: 'User deleted' });
 });
 
@@ -109,7 +115,7 @@ router.get('/tournament-members', authRequired, adminRequired, (req: Request, re
 });
 
 // Toggle paid status for a tournament member (admin only)
-router.put('/tournament-members/:userId/:tournamentId/paid', authRequired, adminRequired, (req: Request, res: Response) => {
+router.put('/tournament-members/:userId/:tournamentId/paid', authRequired, adminRequired, csrfProtection, (req: Request, res: Response) => {
   const db = getDb();
   const member = db.prepare(
     'SELECT * FROM tournament_members WHERE user_id = ? AND tournament_id = ?'
@@ -120,10 +126,12 @@ router.put('/tournament-members/:userId/:tournamentId/paid', authRequired, admin
     return;
   }
 
+  const newPaid = member.paid ? 0 : 1;
   db.prepare(
     'UPDATE tournament_members SET paid = ? WHERE user_id = ? AND tournament_id = ?'
-  ).run(member.paid ? 0 : 1, req.params.userId, req.params.tournamentId);
+  ).run(newPaid, req.params.userId, req.params.tournamentId);
 
+  auditLog(req.user!.userId, req.user!.username, 'toggle_member_paid', 'tournament_member', member.user_id, `Set paid=${!!newPaid} for user ${req.params.userId} in tournament ${req.params.tournamentId}`);
   res.json({ message: 'Paid status updated' });
 });
 
