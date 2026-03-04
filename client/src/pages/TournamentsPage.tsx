@@ -75,7 +75,7 @@ function TournamentList({ onSelect }: { onSelect: (id: number) => void }) {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
       </div>
     );
   }
@@ -83,16 +83,16 @@ function TournamentList({ onSelect }: { onSelect: (id: number) => void }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Tournaments</h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-white tracking-tight">Tournaments</h1>
+        <p className="text-muted text-sm mt-1">
           Join a tournament to see matches and place your predictions
         </p>
       </div>
 
       {tournaments.length === 0 ? (
         <div className="card p-12 text-center">
-          <p className="text-gray-400">No tournaments yet</p>
-          <p className="text-gray-400 text-sm mt-1">Ask your admin to create a tournament</p>
+          <p className="text-muted-dark">No tournaments yet</p>
+          <p className="text-muted-dark text-sm mt-1">Ask your admin to create a tournament</p>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
@@ -102,47 +102,47 @@ function TournamentList({ onSelect }: { onSelect: (id: number) => void }) {
               onClick={() => t.joined ? onSelect(t.id) : undefined}
               className={`card p-5 text-left transition-all ${
                 t.joined
-                  ? 'hover:shadow-md cursor-pointer hover:border-primary-200'
+                  ? 'cursor-pointer hover:border-accent/20'
                   : 'opacity-90'
               }`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <h2 className="text-lg font-semibold text-gray-900 truncate">{t.name}</h2>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <h2 className="text-lg font-semibold text-white truncate">{t.name}</h2>
+                  <p className="text-xs text-muted mt-1">
                     {t.match_count} match{t.match_count !== 1 ? 'es' : ''}
-                    <span className="mx-1.5 text-gray-300">|</span>
+                    <span className="mx-1.5 text-surface-400">|</span>
                     {t.member_count} player{t.member_count !== 1 ? 's' : ''}
                   </p>
                 </div>
                 <span
                   className={`text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
                     t.status === 'active'
-                      ? 'bg-emerald-50 text-emerald-600'
-                      : 'bg-gray-100 text-gray-500'
+                      ? 'bg-accent/15 text-accent'
+                      : 'bg-surface-600 text-muted'
                   }`}
                 >
                   {t.status === 'active' ? 'Active' : 'Finished'}
                 </span>
               </div>
               {t.description && (
-                <p className="text-xs text-gray-500 mt-2">{t.description}</p>
+                <p className="text-xs text-muted mt-2">{t.description}</p>
               )}
               {t.status === 'finished' && t.winner_team && (
                 <div className="mt-3 space-y-0.5">
-                  <p className="text-xs text-gray-500">
-                    Winner: <span className="font-semibold text-gray-700">{t.winner_team}</span>
+                  <p className="text-xs text-muted">
+                    Winner: <span className="font-semibold text-muted-light">{t.winner_team}</span>
                   </p>
                   {t.best_scorer && (
-                    <p className="text-xs text-gray-500">
-                      Best Scorer: <span className="font-semibold text-gray-700">{t.best_scorer}</span>
+                    <p className="text-xs text-muted">
+                      Best Scorer: <span className="font-semibold text-muted-light">{t.best_scorer}</span>
                     </p>
                   )}
                 </div>
               )}
               <div className="mt-3">
                 {t.joined ? (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 bg-primary-50 px-2.5 py-1 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-accent bg-accent/15 px-2.5 py-1 rounded-full">
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -287,19 +287,19 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
   const getTipResultClass = (match: Match, tip: { homeScore: number; awayScore: number }) => {
     if (match.status !== 'finished' || match.home_score == null || match.away_score == null) return '';
     if (tip.homeScore === match.home_score && tip.awayScore === match.away_score) {
-      return 'ring-2 ring-emerald-400 bg-emerald-50';
+      return 'ring-2 ring-emerald-400 bg-emerald-400/15';
     }
     const tipDiff = tip.homeScore - tip.awayScore;
     const matchDiff = match.home_score - match.away_score;
     if (tipDiff === matchDiff) {
-      return 'ring-2 ring-blue-400 bg-blue-50';
+      return 'ring-2 ring-blue-400 bg-blue-400/15';
     }
     const tipOutcome = tip.homeScore > tip.awayScore ? 'H' : tip.homeScore < tip.awayScore ? 'A' : 'D';
     const matchOutcome = match.home_score > match.away_score ? 'H' : match.home_score < match.away_score ? 'A' : 'D';
     if (tipOutcome === matchOutcome) {
-      return 'ring-2 ring-yellow-400 bg-yellow-50';
+      return 'ring-2 ring-yellow-400 bg-yellow-400/15';
     }
-    return 'bg-red-50';
+    return 'bg-red-400/15';
   };
 
   const filteredMatches = matches.filter((m) => {
@@ -324,7 +324,7 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
       </div>
     );
   }
@@ -332,7 +332,7 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
   if (!tournament) {
     return (
       <div className="card p-12 text-center">
-        <p className="text-gray-400">Tournament not found</p>
+        <p className="text-muted-dark">Tournament not found</p>
         <button onClick={onBack} className="btn-primary mt-4">Go back</button>
       </div>
     );
@@ -346,7 +346,7 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
       <div className="flex items-center gap-3">
         <button
           onClick={onBack}
-          className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+          className="p-1.5 rounded-lg text-muted-dark hover:text-muted hover:bg-surface-600 transition-colors"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -354,33 +354,33 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-gray-900 truncate">{tournament.name}</h1>
+            <h1 className="text-xl font-bold text-white truncate">{tournament.name}</h1>
             <span
               className={`text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
                 tournament.status === 'active'
-                  ? 'bg-emerald-50 text-emerald-600'
-                  : 'bg-gray-100 text-gray-500'
+                  ? 'bg-accent/15 text-accent'
+                  : 'bg-surface-600 text-muted'
               }`}
             >
               {tournament.status === 'active' ? 'Active' : 'Finished'}
             </span>
           </div>
-          <p className="text-gray-500 text-xs mt-0.5">
+          <p className="text-muted text-xs mt-0.5">
             {matches.length} match{matches.length !== 1 ? 'es' : ''}
-            <span className="mx-1.5 text-gray-300">|</span>
+            <span className="mx-1.5 text-surface-400">|</span>
             {users.length} player{users.length !== 1 ? 's' : ''}
           </p>
         </div>
         <button
           onClick={handleLeaveTournament}
-          className="btn-secondary btn-sm !text-xs !text-gray-400 hover:!text-red-600"
+          className="btn-secondary btn-sm !text-xs !text-muted-dark hover:!text-red-400"
         >
           Leave
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-700 px-4 py-2 rounded-xl text-sm border border-red-200">
+        <div className="bg-red-500/15 text-red-400 px-4 py-2 rounded-xl text-sm border border-red-500/20">
           {error}
           <button onClick={() => setError('')} className="ml-2 font-medium underline">Dismiss</button>
         </div>
@@ -388,17 +388,17 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
 
       {/* Tournament predictions card */}
       <div className="card p-4">
-        <h2 className="text-xs font-semibold text-gray-400 mb-3 uppercase tracking-wider">
+        <h2 className="text-xs font-semibold text-muted-dark mb-3 uppercase tracking-wider">
           Tournament Predictions
         </h2>
 
         {tournament.status === 'finished' && tournament.winner_team && (
-          <div className="mb-3 p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
-            <p className="text-sm font-medium text-emerald-800">
+          <div className="mb-3 p-2.5 bg-accent/15 rounded-xl border border-accent/20">
+            <p className="text-sm font-medium text-accent">
               Winner: <span className="font-bold">{tournament.winner_team}</span>
             </p>
             {tournament.best_scorer && (
-              <p className="text-sm font-medium text-emerald-800 mt-0.5">
+              <p className="text-sm font-medium text-accent mt-0.5">
                 Best Scorer: <span className="font-bold">{tournament.best_scorer}</span>
               </p>
             )}
@@ -445,45 +445,45 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
         ) : tournament.status === 'active' && !canSubmitTournamentTip ? (
           myTournamentTip ? (
             <div className="space-y-0.5">
-              <p className="text-sm text-gray-600">
-                Winner: <span className="font-semibold text-gray-900">{myTournamentTip.winningTeam}</span>
+              <p className="text-sm text-muted">
+                Winner: <span className="font-semibold text-white">{myTournamentTip.winningTeam}</span>
               </p>
-              <p className="text-sm text-gray-600">
-                Best Scorer: <span className="font-semibold text-gray-900">{myTournamentTip.bestScorer}</span>
+              <p className="text-sm text-muted">
+                Best Scorer: <span className="font-semibold text-white">{myTournamentTip.bestScorer}</span>
               </p>
-              <p className="text-xs text-gray-400 mt-2 italic">Tournament predictions are locked (first match has started)</p>
+              <p className="text-xs text-muted-dark mt-2 italic">Tournament predictions are locked (first match has started)</p>
             </div>
           ) : (
-            <p className="text-xs text-gray-400 italic">Tournament predictions are locked (first match has started)</p>
+            <p className="text-xs text-muted-dark italic">Tournament predictions are locked (first match has started)</p>
           )
         ) : myTournamentTip ? (
           <div className="space-y-0.5">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted">
               Winner:{' '}
               <span className={`font-semibold ${
                 tournament.winner_team && myTournamentTip.winningTeam.toLowerCase() === tournament.winner_team.toLowerCase()
-                  ? 'text-emerald-600' : tournament.status === 'finished' ? 'text-red-500' : 'text-gray-900'
+                  ? 'text-emerald-400' : tournament.status === 'finished' ? 'text-red-400' : 'text-white'
               }`}>
                 {myTournamentTip.winningTeam}
               </span>
             </p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted">
               Best Scorer:{' '}
               <span className={`font-semibold ${
                 tournament.best_scorer && myTournamentTip.bestScorer.toLowerCase() === tournament.best_scorer.toLowerCase()
-                  ? 'text-emerald-600' : tournament.status === 'finished' ? 'text-red-500' : 'text-gray-900'
+                  ? 'text-emerald-400' : tournament.status === 'finished' ? 'text-red-400' : 'text-white'
               }`}>
                 {myTournamentTip.bestScorer}
               </span>
             </p>
           </div>
         ) : (
-          <p className="text-xs text-gray-400 italic">No prediction submitted</p>
+          <p className="text-xs text-muted-dark italic">No prediction submitted</p>
         )}
 
         {tournament.status === 'finished' && otherUsers.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          <div className="mt-3 pt-3 border-t border-surface-500/30">
+            <p className="text-xs font-semibold text-muted-dark uppercase tracking-wider mb-2">
               Other predictions
             </p>
             <div className="space-y-1.5">
@@ -491,7 +491,7 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
                 const tip = tournamentTips[u.id];
                 if (!tip) {
                   return (
-                    <div key={u.id} className="text-xs text-gray-400">
+                    <div key={u.id} className="text-xs text-muted-dark">
                       <span className="font-medium">{u.username}</span> — <span className="italic">no prediction</span>
                     </div>
                   );
@@ -499,14 +499,14 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
                 const winnerCorrect = tournament.winner_team && tip.winningTeam.toLowerCase() === tournament.winner_team.toLowerCase();
                 const scorerCorrect = tournament.best_scorer && tip.bestScorer.toLowerCase() === tournament.best_scorer.toLowerCase();
                 return (
-                  <div key={u.id} className="text-xs bg-gray-50 px-2.5 py-1.5 rounded-lg">
-                    <span className="font-medium text-gray-700">{u.username}</span>
-                    <span className="mx-1 text-gray-300">—</span>
-                    <span className={winnerCorrect ? 'text-emerald-600 font-semibold' : 'text-gray-500'}>
+                  <div key={u.id} className="text-xs bg-surface-700 px-2.5 py-1.5 rounded-lg">
+                    <span className="font-medium text-muted-light">{u.username}</span>
+                    <span className="mx-1 text-surface-400">—</span>
+                    <span className={winnerCorrect ? 'text-emerald-400 font-semibold' : 'text-muted'}>
                       {tip.winningTeam}
                     </span>
-                    <span className="mx-1 text-gray-300">/</span>
-                    <span className={scorerCorrect ? 'text-emerald-600 font-semibold' : 'text-gray-500'}>
+                    <span className="mx-1 text-surface-400">/</span>
+                    <span className={scorerCorrect ? 'text-emerald-400 font-semibold' : 'text-muted'}>
                       {tip.bestScorer}
                     </span>
                   </div>
@@ -520,16 +520,16 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
       {/* Match filter */}
       {matches.length > 0 && (
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-900">Matches</h2>
-          <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
+          <h2 className="text-sm font-semibold text-white">Matches</h2>
+          <div className="flex gap-0.5 bg-surface-800 rounded-full p-1 border border-surface-500/50">
             {(['upcoming', 'finished', 'all'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium capitalize transition-all ${
+                className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize transition-all ${
                   filter === f
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-accent text-surface-900'
+                    : 'text-muted hover:text-white'
                 }`}
               >
                 {f}
@@ -542,8 +542,8 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
       {/* Compact matches list */}
       {filteredMatches.length === 0 && matches.length > 0 ? (
         <div className="card p-8 text-center">
-          <p className="text-gray-400 text-sm">No matches found</p>
-          <p className="text-gray-400 text-xs mt-1">Try a different filter</p>
+          <p className="text-muted-dark text-sm">No matches found</p>
+          <p className="text-muted-dark text-xs mt-1">Try a different filter</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -558,11 +558,11 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
                 <div className="px-3 sm:px-4 py-2.5">
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-dark">
                         {formatDate(match.kickoff)}
                       </span>
                       {!!match.is_playoff && (
-                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-400/15 text-purple-400">
                           Play Off
                         </span>
                       )}
@@ -570,10 +570,10 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
                     <span
                       className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
                         match.status === 'upcoming'
-                          ? 'bg-blue-50 text-blue-600'
+                          ? 'bg-blue-500/15 text-blue-400'
                           : match.status === 'live'
-                          ? 'bg-red-50 text-red-600 animate-pulse'
-                          : 'bg-gray-100 text-gray-500'
+                          ? 'bg-red-500/15 text-red-400 animate-pulse'
+                          : 'bg-surface-600 text-muted'
                       }`}
                     >
                       {match.status === 'upcoming' ? 'Upcoming' : match.status === 'live' ? 'LIVE' : 'Finished'}
@@ -582,23 +582,23 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
 
                   {/* Score row */}
                   <div className="flex items-center justify-center gap-3">
-                    <span className="text-sm font-semibold text-gray-900 text-right flex-1 truncate">
+                    <span className="text-sm font-semibold text-white text-right flex-1 truncate">
                       {match.home_team}
                     </span>
                     <div className="flex items-center gap-1.5 min-w-[60px] justify-center">
                       {match.status === 'finished' && match.home_score != null ? (
-                        <span className="text-lg font-bold text-gray-900 tabular-nums">
+                        <span className="text-lg font-bold text-white tabular-nums">
                           {match.home_score} - {match.away_score}
                         </span>
                       ) : match.status === 'live' && match.home_score != null ? (
-                        <span className="text-lg font-bold text-red-600 tabular-nums">
+                        <span className="text-lg font-bold text-red-400 tabular-nums">
                           {match.home_score} - {match.away_score}
                         </span>
                       ) : (
-                        <span className="text-sm text-gray-300 font-medium">vs</span>
+                        <span className="text-sm text-surface-400 font-medium">vs</span>
                       )}
                     </div>
-                    <span className="text-sm font-semibold text-gray-900 text-left flex-1 truncate">
+                    <span className="text-sm font-semibold text-white text-left flex-1 truncate">
                       {match.away_team}
                     </span>
                   </div>
@@ -617,7 +617,7 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
                         value={tipInput.home}
                         onChange={(e) => handleTipChange(match.id, 'home', e.target.value)}
                       />
-                      <span className="text-gray-300 text-xs">:</span>
+                      <span className="text-surface-400 text-xs">:</span>
                       <input
                         type="text"
                         inputMode="numeric"
@@ -648,7 +648,7 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
                       Your tip: {myTip.homeScore}:{myTip.awayScore}
                     </div>
                   ) : (
-                    <p className="text-[11px] text-gray-400 italic">No tip</p>
+                    <p className="text-[11px] text-muted-dark italic">No tip</p>
                   )}
 
                   {!!match.tips_visible && otherUsers.length > 0 && (
@@ -659,7 +659,7 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
                           return (
                             <span
                               key={u.id}
-                              className="text-[11px] bg-gray-50 text-gray-400 px-1.5 py-0.5 rounded"
+                              className="text-[11px] bg-surface-700 text-muted-dark px-1.5 py-0.5 rounded"
                             >
                               {u.username} —
                             </span>
@@ -668,10 +668,10 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
                         return (
                           <span
                             key={u.id}
-                            className={`text-[11px] px-1.5 py-0.5 rounded ${getTipResultClass(match, tip) || 'bg-gray-50'}`}
+                            className={`text-[11px] px-1.5 py-0.5 rounded ${getTipResultClass(match, tip) || 'bg-surface-700'}`}
                           >
-                            <span className="font-medium text-gray-600">{u.username}</span>{' '}
-                            <span className="font-bold text-gray-800">{tip.homeScore}:{tip.awayScore}</span>
+                            <span className="font-medium text-muted">{u.username}</span>{' '}
+                            <span className="font-bold text-white">{tip.homeScore}:{tip.awayScore}</span>
                           </span>
                         );
                       })}
@@ -686,7 +686,7 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
 
       {/* Legend */}
       {matches.some((m) => m.status === 'finished') && (
-        <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-500 px-1">
+        <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted px-1">
           <span className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 rounded-sm bg-emerald-400" /> Exact
           </span>
@@ -697,7 +697,7 @@ function TournamentDetail({ id, onBack }: { id: number; onBack: () => void }) {
             <span className="w-2.5 h-2.5 rounded-sm bg-yellow-400" /> Outcome
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm bg-red-200" /> Wrong
+            <span className="w-2.5 h-2.5 rounded-sm bg-red-400/50" /> Wrong
           </span>
         </div>
       )}

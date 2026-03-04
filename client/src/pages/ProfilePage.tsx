@@ -49,24 +49,24 @@ export default function ProfilePage() {
   return (
     <div className="max-w-lg mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
-        <p className="text-gray-500 text-sm mt-1">Manage your account settings</p>
+        <h1 className="text-2xl font-bold text-white">Profile</h1>
+        <p className="text-muted text-sm mt-1">Manage your account settings</p>
       </div>
 
       <div className="card p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Account Info</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">Account Info</h2>
         <div className="space-y-3">
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-sm text-gray-500">Username</span>
-            <span className="text-sm font-medium text-gray-900">{user?.username}</span>
+          <div className="flex justify-between items-center py-2 border-b border-surface-500/30">
+            <span className="text-sm text-muted">Username</span>
+            <span className="text-sm font-medium text-white">{user?.username}</span>
           </div>
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-sm text-gray-500">Email</span>
-            <span className="text-sm font-medium text-gray-900">{user?.email || '—'}</span>
+          <div className="flex justify-between items-center py-2 border-b border-surface-500/30">
+            <span className="text-sm text-muted">Email</span>
+            <span className="text-sm font-medium text-white">{user?.email || '—'}</span>
           </div>
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-sm text-gray-500">Role</span>
-            <span className={`text-sm font-medium ${user?.isAdmin ? 'text-primary-600' : 'text-gray-900'}`}>
+          <div className="flex justify-between items-center py-2 border-b border-surface-500/30">
+            <span className="text-sm text-muted">Role</span>
+            <span className={`text-sm font-medium ${user?.isAdmin ? 'text-accent' : 'text-white'}`}>
               {user?.isAdmin ? 'Admin' : 'Player'}
             </span>
           </div>
@@ -74,11 +74,11 @@ export default function ProfilePage() {
       </div>
 
       <div className="card p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Notifications</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">Notifications</h2>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-900">Match Reminders</p>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-sm font-medium text-white">Match Reminders</p>
+            <p className="text-xs text-muted mt-0.5">
               Get an email 1 hour before matches you haven't tipped yet
             </p>
           </div>
@@ -87,7 +87,7 @@ export default function ProfilePage() {
             disabled={notifLoading}
             onClick={handleToggleNotifications}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              user?.emailNotifications ? 'bg-primary-600' : 'bg-gray-300'
+              user?.emailNotifications ? 'bg-accent' : 'bg-surface-500'
             } ${notifLoading ? 'opacity-50' : ''}`}
           >
             <span
@@ -100,15 +100,15 @@ export default function ProfilePage() {
       </div>
 
       <div className="card p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Change Password</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">Change Password</h2>
         <form onSubmit={handleChangePassword} className="space-y-4">
           {error && (
-            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm border border-red-200">
+            <div className="bg-red-500/15 text-red-400 px-4 py-3 rounded-lg text-sm border border-red-500/20">
               {error}
             </div>
           )}
           {success && (
-            <div className="bg-emerald-50 text-emerald-700 px-4 py-3 rounded-lg text-sm border border-emerald-200">
+            <div className="bg-accent/15 text-accent px-4 py-3 rounded-lg text-sm border border-accent/20">
               {success}
             </div>
           )}

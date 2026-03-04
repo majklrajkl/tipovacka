@@ -10,8 +10,8 @@ export default function AdminPage() {
   if (!user?.isAdmin) {
     return (
       <div className="card p-12 text-center">
-        <p className="text-gray-400">Access denied</p>
-        <p className="text-gray-400 text-sm mt-1">Admin privileges required</p>
+        <p className="text-muted-dark">Access denied</p>
+        <p className="text-muted-dark text-sm mt-1">Admin privileges required</p>
       </div>
     );
   }
@@ -27,19 +27,19 @@ export default function AdminPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Admin Panel</h1>
-        <p className="text-gray-500 text-sm mt-0.5">Manage the tipping game</p>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Admin Panel</h1>
+        <p className="text-muted text-sm mt-0.5">Manage the tipping game</p>
       </div>
 
-      <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5 w-fit overflow-x-auto">
+      <div className="flex gap-0.5 bg-surface-800 rounded-full p-1 w-fit overflow-x-auto border border-surface-500/50">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-accent text-surface-900'
+                : 'text-muted hover:text-white'
             }`}
           >
             {tab.label}
@@ -138,13 +138,13 @@ function MatchesTab() {
   return (
     <div className="space-y-4">
       <div className="card p-4">
-        <h2 className="text-sm font-semibold text-gray-900 mb-3">Create Match</h2>
+        <h2 className="text-sm font-semibold text-white mb-3">Create Match</h2>
         <form onSubmit={handleCreate} className="space-y-3">
           {error && (
-            <div className="bg-red-50 text-red-700 px-3 py-2 rounded-lg text-xs border border-red-200">{error}</div>
+            <div className="bg-red-500/15 text-red-400 px-3 py-2 rounded-lg text-xs border border-red-500/20">{error}</div>
           )}
           {success && (
-            <div className="bg-emerald-50 text-emerald-700 px-3 py-2 rounded-lg text-xs border border-emerald-200">{success}</div>
+            <div className="bg-accent/15 text-accent px-3 py-2 rounded-lg text-xs border border-accent/20">{success}</div>
           )}
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -170,8 +170,8 @@ function MatchesTab() {
             </div>
           </div>
           <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={isPlayoff} onChange={(e) => setIsPlayoff(e.target.checked)} className="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
-            <span className="text-xs font-medium text-gray-700">Play Off match (multiplied points)</span>
+            <input type="checkbox" checked={isPlayoff} onChange={(e) => setIsPlayoff(e.target.checked)} className="rounded border-surface-400 text-accent focus:ring-accent" />
+            <span className="text-xs font-medium text-muted-light">Play Off match (multiplied points)</span>
           </label>
           <button type="submit" disabled={loading} className="btn-primary btn-sm">
             {loading ? 'Creating...' : 'Create Match'}
@@ -181,13 +181,13 @@ function MatchesTab() {
 
       <div className="card">
         <button onClick={() => setShowImport(!showImport)} className="w-full px-4 py-3 flex items-center justify-between text-left">
-          <h2 className="text-sm font-semibold text-gray-900">Import from CSV</h2>
-          <span className="text-xs text-gray-400">{showImport ? 'Hide' : 'Show'}</span>
+          <h2 className="text-sm font-semibold text-white">Import from CSV</h2>
+          <span className="text-xs text-muted-dark">{showImport ? 'Hide' : 'Show'}</span>
         </button>
         {showImport && (
           <div className="px-4 pb-4 space-y-3">
-            <p className="text-xs text-gray-500">
-              Format: <code className="bg-gray-100 px-1 py-0.5 rounded text-[11px]">HomeTeam,AwayTeam,YYYY-MM-DDTHH:MM</code>
+            <p className="text-xs text-muted">
+              Format: <code className="bg-surface-600 px-1 py-0.5 rounded text-[11px]">HomeTeam,AwayTeam,YYYY-MM-DDTHH:MM</code>
             </p>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -236,33 +236,33 @@ function MatchesTab() {
       </div>
 
       <div className="card">
-        <div className="px-4 py-3 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-900">Manage Matches</h2>
+        <div className="px-4 py-3 border-b border-surface-500/30">
+          <h2 className="text-sm font-semibold text-white">Manage Matches</h2>
         </div>
         {matchesLoading ? (
           <div className="p-4 flex justify-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" />
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent" />
           </div>
         ) : matches.length === 0 ? (
-          <div className="p-6 text-center text-gray-400 text-sm">No matches yet</div>
+          <div className="p-6 text-center text-muted-dark text-sm">No matches yet</div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-surface-500/30">
             {matches.map((match) => (
               <div key={match.id} className="px-3 sm:px-4 py-2.5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 text-xs">
+                    <p className="font-medium text-white text-xs">
                       {match.home_team} vs {match.away_team}
                       {!!match.is_playoff && (
                         <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">Play Off</span>
                       )}
                     </p>
-                    <p className="text-[11px] text-gray-400">
+                    <p className="text-[11px] text-muted-dark">
                       {(() => { const d = new Date(match.kickoff); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; })()}
                       {' '}&mdash;{' '}
-                      <span className={match.status === 'finished' ? 'text-gray-500' : 'text-blue-500'}>{match.status}</span>
+                      <span className={match.status === 'finished' ? 'text-muted' : 'text-blue-400'}>{match.status}</span>
                       {match.status === 'finished' && match.home_score != null && (
-                        <span className="ml-1 font-semibold text-gray-600">({match.home_score}-{match.away_score})</span>
+                        <span className="ml-1 font-semibold text-muted">({match.home_score}-{match.away_score})</span>
                       )}
                     </p>
                   </div>
@@ -272,7 +272,7 @@ function MatchesTab() {
                       placeholder="H" value={resultInputs[match.id]?.home ?? ''}
                       onChange={(e) => setResultInputs((prev) => ({ ...prev, [match.id]: { ...prev[match.id], home: e.target.value, away: prev[match.id]?.away ?? '' } }))}
                     />
-                    <span className="text-gray-300 text-xs">:</span>
+                    <span className="text-surface-400 text-xs">:</span>
                     <input
                       type="number" min="0" className="input !w-12 text-center text-xs !py-1"
                       placeholder="A" value={resultInputs[match.id]?.away ?? ''}
@@ -409,7 +409,7 @@ function TournamentsTab() {
   return (
     <div className="space-y-4">
       <div className="card p-4">
-        <h2 className="text-sm font-semibold text-gray-900 mb-3">Create Tournament</h2>
+        <h2 className="text-sm font-semibold text-white mb-3">Create Tournament</h2>
         <form onSubmit={handleCreate} className="space-y-3">
           {error && (
             <div className="bg-red-50 text-red-700 px-3 py-2 rounded-lg text-xs border border-red-200">{error}</div>
@@ -432,32 +432,32 @@ function TournamentsTab() {
       </div>
 
       <div className="card">
-        <div className="px-4 py-3 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-900">Manage Tournaments</h2>
+        <div className="px-4 py-3 border-b border-surface-500/30">
+          <h2 className="text-sm font-semibold text-white">Manage Tournaments</h2>
         </div>
         {tournaments.length === 0 ? (
-          <div className="p-6 text-center text-gray-400 text-sm">No tournaments yet</div>
+          <div className="p-6 text-center text-muted-dark text-sm">No tournaments yet</div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-surface-500/30">
             {tournaments.map((t) => (
               <div key={t.id} className="px-3 sm:px-4 py-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 text-sm">{t.name}</p>
-                    <p className="text-[11px] text-gray-400">
+                    <p className="font-medium text-white text-sm">{t.name}</p>
+                    <p className="text-[11px] text-muted-dark">
                       {t.match_count} match{t.match_count !== 1 ? 'es' : ''}
-                      <span className="mx-1 text-gray-300">|</span>
+                      <span className="mx-1 text-surface-400">|</span>
                       {t.member_count} member{t.member_count !== 1 ? 's' : ''}
-                      <span className="mx-1 text-gray-300">|</span>
-                      <span className={t.status === 'active' ? 'text-emerald-500 font-medium' : 'text-gray-500'}>{t.status}</span>
+                      <span className="mx-1 text-surface-400">|</span>
+                      <span className={t.status === 'active' ? 'text-emerald-500 font-medium' : 'text-muted'}>{t.status}</span>
                       {t.winner_team && (
-                        <span className="ml-1 text-gray-500">
+                        <span className="ml-1 text-muted">
                           (Winner: {t.winner_team}{t.best_scorer ? `, Scorer: ${t.best_scorer}` : ''})
                         </span>
                       )}
                     </p>
                     {t.description && (
-                      <p className="text-[11px] text-gray-500 mt-0.5 italic">"{t.description}"</p>
+                      <p className="text-[11px] text-muted mt-0.5 italic">"{t.description}"</p>
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 flex-wrap">
@@ -494,7 +494,7 @@ function TournamentsTab() {
                 </div>
 
                 {descEditId === t.id && (
-                  <div className="mt-2 p-2.5 bg-gray-50 rounded-lg flex gap-2 items-end">
+                  <div className="mt-2 p-2.5 bg-surface-600/50 rounded-lg flex gap-2 items-end">
                     <div className="flex-1">
                       <label className="label">Description</label>
                       <input type="text" className="input" value={descEdit} onChange={(e) => setDescEdit(e.target.value)} placeholder="Leaderboard description" />
@@ -504,7 +504,7 @@ function TournamentsTab() {
                 )}
 
                 {editingId === t.id && (
-                  <div className="mt-2 p-2.5 bg-gray-50 rounded-lg space-y-2">
+                  <div className="mt-2 p-2.5 bg-surface-600/50 rounded-lg space-y-2">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <label className="label">Winning Team</label>
@@ -579,17 +579,17 @@ function ScoringTab() {
 
   return (
     <div className="card p-4 space-y-3">
-      <h2 className="text-sm font-semibold text-gray-900">Scoring Rules</h2>
-      <p className="text-xs text-gray-500">Changes apply retroactively to all calculations.</p>
+      <h2 className="text-sm font-semibold text-white">Scoring Rules</h2>
+      <p className="text-xs text-muted">Changes apply retroactively to all calculations.</p>
       {success && (
         <div className="bg-emerald-50 text-emerald-700 px-3 py-2 rounded-lg text-xs border border-emerald-200">{success}</div>
       )}
       <div className="space-y-2">
         {rules.map((rule) => (
-          <div key={rule.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
+          <div key={rule.id} className="flex items-center justify-between bg-surface-600/50 rounded-lg px-3 py-2">
             <div>
-              <p className="text-xs font-medium text-gray-900">{rule.label}</p>
-              <p className="text-[11px] text-gray-400">{rule.key}</p>
+              <p className="text-xs font-medium text-white">{rule.label}</p>
+              <p className="text-[11px] text-muted-dark">{rule.key}</p>
             </div>
             <div className="flex items-center gap-1.5">
               <input
@@ -597,7 +597,7 @@ function ScoringTab() {
                 value={rule.points}
                 onChange={(e) => setRules((prev) => prev.map((r) => r.id === rule.id ? { ...r, points: Number(e.target.value) } : r))}
               />
-              <span className="text-[11px] text-gray-400">{rule.key === 'playoff_multiplier' ? 'x' : 'pts'}</span>
+              <span className="text-[11px] text-muted-dark">{rule.key === 'playoff_multiplier' ? 'x' : 'pts'}</span>
               <button onClick={() => handleUpdate(rule.id, rule.points)} disabled={saving === rule.id} className="btn-primary btn-sm !text-[11px] !px-2 !py-1">
                 {saving === rule.id ? '...' : 'Save'}
               </button>
@@ -677,8 +677,8 @@ function UsersTab() {
 
   return (
     <div className="card">
-      <div className="px-4 py-3 border-b border-gray-100">
-        <h2 className="text-sm font-semibold text-gray-900">User Management</h2>
+      <div className="px-4 py-3 border-b border-surface-500/30">
+        <h2 className="text-sm font-semibold text-white">User Management</h2>
       </div>
       {success && (
         <div className="mx-4 mt-3 bg-emerald-50 text-emerald-700 px-3 py-2 rounded-lg text-xs border border-emerald-200">{success}</div>
@@ -686,23 +686,23 @@ function UsersTab() {
       {error && (
         <div className="mx-4 mt-3 bg-red-50 text-red-700 px-3 py-2 rounded-lg text-xs border border-red-200">{error}</div>
       )}
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-surface-500/30">
         {users.map((u) => (
           <div key={u.id} className="px-4 py-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-gray-900 text-sm">
+                <p className="font-medium text-white text-sm">
                   {u.username}
                   {u.id === currentUser?.id && (
                     <span className="text-[10px] text-primary-500 ml-1">(you)</span>
                   )}
                 </p>
-                <p className="text-[11px] text-gray-400">
+                <p className="text-[11px] text-muted-dark">
                   Joined {(() => { const d = new Date(u.created_at); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; })()}
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${u.is_admin ? 'bg-primary-50 text-primary-700' : 'bg-gray-100 text-gray-500'}`}>
+                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${u.is_admin ? 'bg-primary-50 text-primary-700' : 'bg-surface-600 text-muted'}`}>
                   {u.is_admin ? 'Admin' : 'Player'}
                 </span>
                 {u.id !== currentUser?.id && (
@@ -731,7 +731,7 @@ function UsersTab() {
               </div>
             </div>
             {resetPasswordId === u.id && (
-              <div className="mt-2 p-2.5 bg-gray-50 rounded-lg flex gap-2 items-end">
+              <div className="mt-2 p-2.5 bg-surface-600/50 rounded-lg flex gap-2 items-end">
                 <div className="flex-1">
                   <label className="label">New Password</label>
                   <input
@@ -812,24 +812,24 @@ function MembersTab() {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-gray-500">View which users joined each tournament and mark payments.</p>
+      <p className="text-xs text-muted">View which users joined each tournament and mark payments.</p>
       {Object.entries(grouped).map(([tid, group]) => (
         <div key={tid} className="card">
-          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-900">{group.name}</h3>
-            <span className="text-[10px] text-gray-400">{group.members.length} member{group.members.length !== 1 ? 's' : ''}</span>
+          <div className="px-4 py-3 border-b border-surface-500/30 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-white">{group.name}</h3>
+            <span className="text-[10px] text-muted-dark">{group.members.length} member{group.members.length !== 1 ? 's' : ''}</span>
           </div>
           {group.members.length === 0 ? (
-            <div className="p-4 text-center text-xs text-gray-400">No members yet</div>
+            <div className="p-4 text-center text-xs text-muted-dark">No members yet</div>
           ) : (
-            <div className="divide-y divide-gray-50">
+            <div className="divide-y divide-surface-500/30">
               {group.members.map((m) => {
                 const key = `${m.user_id}-${m.tournament_id}`;
                 return (
                   <div key={key} className="px-4 py-2.5 flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{m.username}</p>
-                      <p className="text-[11px] text-gray-400">
+                      <p className="text-sm font-medium text-white">{m.username}</p>
+                      <p className="text-[11px] text-muted-dark">
                         Joined {(() => { const d = new Date(m.joined_at); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; })()}
                       </p>
                     </div>
@@ -852,7 +852,7 @@ function MembersTab() {
         </div>
       ))}
       {Object.keys(grouped).length === 0 && (
-        <div className="card p-6 text-center text-gray-400 text-sm">No tournaments yet</div>
+        <div className="card p-6 text-center text-muted-dark text-sm">No tournaments yet</div>
       )}
     </div>
   );

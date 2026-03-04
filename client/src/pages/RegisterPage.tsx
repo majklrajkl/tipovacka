@@ -29,20 +29,20 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-surface-700 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-600 rounded-2xl mb-4">
-            <span className="text-white text-2xl font-bold">T</span>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-accent rounded-2xl mb-4">
+            <span className="text-surface-900 text-2xl font-bold">T</span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Join Tipovačka</h1>
-          <p className="text-gray-500 mt-1">Create your account</p>
+          <h1 className="text-3xl font-bold text-white">Join Tipovacka</h1>
+          <p className="text-muted mt-1">Create your account</p>
         </div>
 
         <div className="card p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm border border-red-200">
+              <div className="bg-red-500/15 text-red-400 px-4 py-3 rounded-lg text-sm border border-red-500/20">
                 {error}
               </div>
             )}
@@ -100,9 +100,9 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-4">
+          <p className="text-center text-sm text-muted mt-4">
             Already have an account?{' '}
-            <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+            <Link to="/login" className="text-accent hover:text-accent-light font-medium">
               Sign in
             </Link>
           </p>

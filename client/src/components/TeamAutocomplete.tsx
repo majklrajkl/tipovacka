@@ -38,13 +38,13 @@ export default function TeamAutocomplete({
         onFocus={() => setOpen(true)}
       />
       {open && filtered.length > 0 && (
-        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+        <div className="absolute z-10 mt-1 w-full bg-surface-800 border border-surface-500 rounded-lg shadow-lg max-h-40 overflow-y-auto">
           {filtered.map((team) => (
             <button
               key={team}
               type="button"
-              className={`w-full text-left px-3 py-1.5 text-xs hover:bg-primary-50 transition-colors ${
-                team.toLowerCase() === value.toLowerCase() ? 'bg-primary-50 font-semibold text-primary-700' : 'text-gray-700'
+              className={`w-full text-left px-3 py-1.5 text-xs hover:bg-accent/10 transition-colors ${
+                team.toLowerCase() === value.toLowerCase() ? 'bg-accent/15 font-semibold text-accent' : 'text-muted-light'
               }`}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => { onChange(team); setOpen(false); }}

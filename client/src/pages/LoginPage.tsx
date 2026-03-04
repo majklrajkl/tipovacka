@@ -23,20 +23,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-surface-700 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl mb-3 shadow-lg shadow-primary-500/20">
-            <span className="text-white text-xl font-bold">T</span>
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-accent rounded-2xl mb-3">
+            <span className="text-surface-900 text-xl font-bold">T</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Tipovacka</h1>
-          <p className="text-gray-400 text-sm mt-0.5">Sign in to your account</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Tipovacka</h1>
+          <p className="text-muted text-sm mt-0.5">Sign in to your account</p>
         </div>
 
         <div className="card p-5">
           <form onSubmit={handleSubmit} className="space-y-3">
             {error && (
-              <div className="bg-red-50 text-red-700 px-3 py-2 rounded-lg text-xs border border-red-200">
+              <div className="bg-red-500/15 text-red-400 px-3 py-2 rounded-lg text-xs border border-red-500/20">
                 {error}
               </div>
             )}
@@ -69,14 +69,14 @@ export default function LoginPage() {
           </form>
 
           <div className="text-center mt-4 space-y-2">
-            <p className="text-xs text-gray-400">
-              <Link to="/forgot-password" className="text-primary-600 hover:text-primary-700 font-medium">
+            <p className="text-xs text-muted-dark">
+              <Link to="/forgot-password" className="text-accent hover:text-accent-light font-medium">
                 Forgot your password?
               </Link>
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted-dark">
               Don't have an account?{' '}
-              <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+              <Link to="/register" className="text-accent hover:text-accent-light font-medium">
                 Create one
               </Link>
             </p>

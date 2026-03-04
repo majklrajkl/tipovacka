@@ -36,7 +36,6 @@ export default function MatchesPage() {
       const data = await api.getMatches();
       setMatches(data.matches);
       setUsers(data.users);
-      // Initialize tip inputs with user's existing tips
       const inputs: Record<number, { home: string; away: string }> = {};
       data.matches.forEach((m: Match) => {
         const myTip = m.tips[user!.id];
@@ -95,27 +94,27 @@ export default function MatchesPage() {
   };
 
   const getOutcomeBadge = (homeScore: number, awayScore: number) => {
-    if (homeScore > awayScore) return { label: 'H', cls: 'bg-blue-100 text-blue-700' };
-    if (homeScore < awayScore) return { label: 'A', cls: 'bg-orange-100 text-orange-700' };
-    return { label: 'D', cls: 'bg-gray-100 text-gray-700' };
+    if (homeScore > awayScore) return { label: 'H', cls: 'bg-blue-500/20 text-blue-400' };
+    if (homeScore < awayScore) return { label: 'A', cls: 'bg-orange-500/20 text-orange-400' };
+    return { label: 'D', cls: 'bg-surface-600 text-muted' };
   };
 
   const getTipResultClass = (match: Match, tip: { homeScore: number; awayScore: number }) => {
     if (match.status !== 'finished' || match.home_score == null || match.away_score == null) return '';
     if (tip.homeScore === match.home_score && tip.awayScore === match.away_score) {
-      return 'ring-2 ring-emerald-400 bg-emerald-50';
+      return 'ring-2 ring-emerald-400 bg-emerald-400/15';
     }
     const tipDiff = tip.homeScore - tip.awayScore;
     const matchDiff = match.home_score - match.away_score;
     if (tipDiff === matchDiff) {
-      return 'ring-2 ring-blue-400 bg-blue-50';
+      return 'ring-2 ring-blue-400 bg-blue-400/15';
     }
     const tipOutcome = tip.homeScore > tip.awayScore ? 'H' : tip.homeScore < tip.awayScore ? 'A' : 'D';
     const matchOutcome = match.home_score > match.away_score ? 'H' : match.home_score < match.away_score ? 'A' : 'D';
     if (tipOutcome === matchOutcome) {
-      return 'ring-2 ring-yellow-400 bg-yellow-50';
+      return 'ring-2 ring-yellow-400 bg-yellow-400/15';
     }
-    return 'bg-red-50';
+    return 'bg-red-400/15';
   };
 
   const filteredMatches = matches.filter((m) => {
@@ -129,7 +128,7 @@ export default function MatchesPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
       </div>
     );
   }
@@ -138,20 +137,20 @@ export default function MatchesPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Matches</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-white">Matches</h1>
+          <p className="text-muted text-sm mt-1">
             {matches.length} match{matches.length !== 1 ? 'es' : ''} total
           </p>
         </div>
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+        <div className="flex gap-1 bg-surface-800 rounded-full p-1 border border-surface-500/50">
           {(['all', 'upcoming', 'finished'] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${
                 filter === f
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-accent text-surface-900'
+                  : 'text-muted hover:text-white'
               }`}
             >
               {f}
@@ -161,7 +160,7 @@ export default function MatchesPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm border border-red-200">
+        <div className="bg-red-500/15 text-red-400 px-4 py-3 rounded-lg text-sm border border-red-500/20">
           {error}
           <button onClick={() => setError('')} className="ml-2 font-medium underline">
             Dismiss
@@ -171,8 +170,8 @@ export default function MatchesPage() {
 
       {filteredMatches.length === 0 ? (
         <div className="card p-12 text-center">
-          <p className="text-gray-400 text-lg">No matches found</p>
-          <p className="text-gray-400 text-sm mt-1">
+          <p className="text-muted text-lg">No matches found</p>
+          <p className="text-muted-dark text-sm mt-1">
             {filter !== 'all' ? 'Try a different filter' : 'Ask your admin to add some matches'}
           </p>
         </div>
@@ -186,14 +185,14 @@ export default function MatchesPage() {
             return (
               <div key={match.id} className="card">
                 {/* Match header */}
-                <div className="px-4 sm:px-6 py-4 border-b border-gray-100">
+                <div className="px-4 sm:px-6 py-4 border-b border-surface-500/30">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-400 font-medium">
+                      <span className="text-xs text-muted-dark font-medium">
                         {formatDate(match.kickoff)}
                       </span>
                       {!!match.is_playoff && (
-                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-400/15 text-purple-400">
                           Play Off
                         </span>
                       )}
@@ -201,10 +200,10 @@ export default function MatchesPage() {
                     <span
                       className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                         match.status === 'upcoming'
-                          ? 'bg-blue-50 text-blue-600'
+                          ? 'bg-blue-500/15 text-blue-400'
                           : match.status === 'live'
-                          ? 'bg-red-50 text-red-600'
-                          : 'bg-gray-100 text-gray-600'
+                          ? 'bg-red-500/15 text-red-400'
+                          : 'bg-surface-600 text-muted'
                       }`}
                     >
                       {match.status === 'upcoming' ? 'Upcoming' : match.status === 'live' ? 'Live' : 'Finished'}
@@ -213,19 +212,19 @@ export default function MatchesPage() {
 
                   {/* Score display */}
                   <div className="flex items-center justify-center gap-4 mt-3">
-                    <span className="text-base sm:text-lg font-semibold text-gray-900 text-right flex-1">
+                    <span className="text-base sm:text-lg font-semibold text-white text-right flex-1">
                       {match.home_team}
                     </span>
                     <div className="flex items-center gap-2 min-w-[80px] justify-center">
                       {match.status === 'finished' && match.home_score != null ? (
-                        <span className="text-2xl font-bold text-gray-900">
+                        <span className="text-2xl font-bold text-accent">
                           {match.home_score} - {match.away_score}
                         </span>
                       ) : (
-                        <span className="text-lg text-gray-400">vs</span>
+                        <span className="text-lg text-muted-dark">vs</span>
                       )}
                     </div>
-                    <span className="text-base sm:text-lg font-semibold text-gray-900 text-left flex-1">
+                    <span className="text-base sm:text-lg font-semibold text-white text-left flex-1">
                       {match.away_team}
                     </span>
                   </div>
@@ -236,7 +235,7 @@ export default function MatchesPage() {
                   {/* My tip */}
                   {upcoming ? (
                     <div className="mb-4">
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                      <p className="text-xs font-medium text-muted uppercase tracking-wider mb-2">
                         Your prediction
                       </p>
                       <div className="flex items-center gap-2">
@@ -249,7 +248,7 @@ export default function MatchesPage() {
                           value={tipInput.home}
                           onChange={(e) => handleTipChange(match.id, 'home', e.target.value)}
                         />
-                        <span className="text-gray-400 font-medium">:</span>
+                        <span className="text-muted-dark font-medium">:</span>
                         <input
                           type="text"
                           inputMode="numeric"
@@ -278,11 +277,11 @@ export default function MatchesPage() {
                     </div>
                   ) : myTip ? (
                     <div className="mb-4">
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                      <p className="text-xs font-medium text-muted uppercase tracking-wider mb-2">
                         Your prediction
                       </p>
                       <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold ${getTipResultClass(match, myTip)}`}>
-                        {myTip.homeScore} : {myTip.awayScore}
+                        <span className="text-white">{myTip.homeScore} : {myTip.awayScore}</span>
                         {(() => {
                           const b = getOutcomeBadge(myTip.homeScore, myTip.awayScore);
                           return (
@@ -295,14 +294,14 @@ export default function MatchesPage() {
                     </div>
                   ) : (
                     <div className="mb-4">
-                      <p className="text-xs text-gray-400 italic">No prediction submitted</p>
+                      <p className="text-xs text-muted-dark italic">No prediction submitted</p>
                     </div>
                   )}
 
                   {/* Other users' tips - only visible after kickoff */}
                   {match.tips_visible && otherUsers.length > 0 && (
                     <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                      <p className="text-xs font-medium text-muted uppercase tracking-wider mb-2">
                         Other predictions
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -312,7 +311,7 @@ export default function MatchesPage() {
                             return (
                               <div
                                 key={u.id}
-                                className="text-xs bg-gray-50 text-gray-400 px-2.5 py-1.5 rounded-lg"
+                                className="text-xs bg-surface-600/50 text-muted-dark px-2.5 py-1.5 rounded-lg"
                               >
                                 <span className="font-medium">{u.username}</span>{' '}
                                 <span className="italic">no tip</span>
@@ -322,10 +321,10 @@ export default function MatchesPage() {
                           return (
                             <div
                               key={u.id}
-                              className={`text-xs px-2.5 py-1.5 rounded-lg ${getTipResultClass(match, tip) || 'bg-gray-50'}`}
+                              className={`text-xs px-2.5 py-1.5 rounded-lg ${getTipResultClass(match, tip) || 'bg-surface-600/50'}`}
                             >
-                              <span className="font-medium text-gray-700">{u.username}</span>{' '}
-                              <span className="font-semibold text-gray-900">
+                              <span className="font-medium text-muted-light">{u.username}</span>{' '}
+                              <span className="font-semibold text-white">
                                 {tip.homeScore}:{tip.awayScore}
                               </span>
                             </div>
@@ -344,8 +343,8 @@ export default function MatchesPage() {
       {/* Legend */}
       {matches.some((m) => m.status === 'finished') && (
         <div className="card p-4">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Tip results legend</p>
-          <div className="flex flex-wrap gap-3 text-xs">
+          <p className="text-xs font-medium text-muted uppercase tracking-wider mb-2">Tip results legend</p>
+          <div className="flex flex-wrap gap-3 text-xs text-muted-light">
             <span className="flex items-center gap-1">
               <span className="w-3 h-3 rounded bg-emerald-400 inline-block" /> Exact score
             </span>
@@ -356,7 +355,7 @@ export default function MatchesPage() {
               <span className="w-3 h-3 rounded bg-yellow-400 inline-block" /> Correct outcome
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded bg-red-200 inline-block" /> Wrong
+              <span className="w-3 h-3 rounded bg-red-400/50 inline-block" /> Wrong
             </span>
           </div>
         </div>

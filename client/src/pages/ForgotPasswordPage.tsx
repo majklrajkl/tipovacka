@@ -23,23 +23,23 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-surface-700 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl mb-3 shadow-lg shadow-primary-500/20">
-            <span className="text-white text-xl font-bold">T</span>
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-accent rounded-2xl mb-3">
+            <span className="text-surface-900 text-xl font-bold">T</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Reset Password</h1>
-          <p className="text-gray-400 text-sm mt-0.5">Enter your email to receive a reset link</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Reset Password</h1>
+          <p className="text-muted text-sm mt-0.5">Enter your email to receive a reset link</p>
         </div>
 
         <div className="card p-5">
           {sent ? (
             <div className="text-center space-y-3">
-              <div className="bg-emerald-50 text-emerald-700 px-4 py-3 rounded-lg text-sm border border-emerald-200">
+              <div className="bg-accent/15 text-accent px-4 py-3 rounded-lg text-sm border border-accent/20">
                 If an account with that email exists, a reset link has been sent. Check your inbox.
               </div>
-              <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium text-sm">
+              <Link to="/login" className="text-accent hover:text-accent-light font-medium text-sm">
                 Back to Sign In
               </Link>
             </div>
@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
             <>
               <form onSubmit={handleSubmit} className="space-y-3">
                 {error && (
-                  <div className="bg-red-50 text-red-700 px-3 py-2 rounded-lg text-xs border border-red-200">
+                  <div className="bg-red-500/15 text-red-400 px-3 py-2 rounded-lg text-xs border border-red-500/20">
                     {error}
                   </div>
                 )}
@@ -67,8 +67,8 @@ export default function ForgotPasswordPage() {
                   {loading ? 'Sending...' : 'Send Reset Link'}
                 </button>
               </form>
-              <p className="text-center text-xs text-gray-400 mt-4">
-                <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+              <p className="text-center text-xs text-muted-dark mt-4">
+                <Link to="/login" className="text-accent hover:text-accent-light font-medium">
                   Back to Sign In
                 </Link>
               </p>

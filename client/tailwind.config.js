@@ -4,18 +4,25 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-          950: '#1e1b4b',
+        // Škoda X deep emerald green palette
+        surface: {
+          900: '#060F0B',  // darkest (inputs)
+          800: '#091A13',  // card bg
+          700: '#0E2A1F',  // page bg
+          600: '#133A2B',  // elevated/hover
+          500: '#1A4A38',  // borders, subtle
+          400: '#245E48',  // lighter borders
+        },
+        accent: {
+          DEFAULT: '#78FAAE',
+          light: '#A5FCC8',
+          dark: '#50E890',
+          muted: '#78FAAE33',
+        },
+        muted: {
+          DEFAULT: '#8AA99B',
+          light: '#A3BEB0',
+          dark: '#5E7A6D',
         },
       },
     },
