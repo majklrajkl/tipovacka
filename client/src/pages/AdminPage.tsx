@@ -254,7 +254,7 @@ function MatchesTab() {
                     <p className="font-medium text-white text-xs">
                       {match.home_team} vs {match.away_team}
                       {!!match.is_playoff && (
-                        <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">Play Off</span>
+                        <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-400/15 text-purple-400">Play Off</span>
                       )}
                     </p>
                     <p className="text-[11px] text-muted-dark">
@@ -401,7 +401,7 @@ function TournamentsTab() {
   if (loading) {
     return (
       <div className="flex justify-center py-6">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent" />
       </div>
     );
   }
@@ -412,10 +412,10 @@ function TournamentsTab() {
         <h2 className="text-sm font-semibold text-white mb-3">Create Tournament</h2>
         <form onSubmit={handleCreate} className="space-y-3">
           {error && (
-            <div className="bg-red-50 text-red-700 px-3 py-2 rounded-lg text-xs border border-red-200">{error}</div>
+            <div className="bg-red-500/15 text-red-400 px-3 py-2 rounded-lg text-xs border border-red-500/20">{error}</div>
           )}
           {success && (
-            <div className="bg-emerald-50 text-emerald-700 px-3 py-2 rounded-lg text-xs border border-emerald-200">{success}</div>
+            <div className="bg-accent/15 text-accent px-3 py-2 rounded-lg text-xs border border-accent/20">{success}</div>
           )}
           <div>
             <label className="label">Tournament Name</label>
@@ -572,7 +572,7 @@ function ScoringTab() {
   if (loading) {
     return (
       <div className="flex justify-center py-6">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent" />
       </div>
     );
   }
@@ -582,7 +582,7 @@ function ScoringTab() {
       <h2 className="text-sm font-semibold text-white">Scoring Rules</h2>
       <p className="text-xs text-muted">Changes apply retroactively to all calculations.</p>
       {success && (
-        <div className="bg-emerald-50 text-emerald-700 px-3 py-2 rounded-lg text-xs border border-emerald-200">{success}</div>
+        <div className="bg-accent/15 text-accent px-3 py-2 rounded-lg text-xs border border-accent/20">{success}</div>
       )}
       <div className="space-y-2">
         {rules.map((rule) => (
@@ -670,7 +670,7 @@ function UsersTab() {
   if (loading) {
     return (
       <div className="flex justify-center py-6">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent" />
       </div>
     );
   }
@@ -681,10 +681,10 @@ function UsersTab() {
         <h2 className="text-sm font-semibold text-white">User Management</h2>
       </div>
       {success && (
-        <div className="mx-4 mt-3 bg-emerald-50 text-emerald-700 px-3 py-2 rounded-lg text-xs border border-emerald-200">{success}</div>
+        <div className="mx-4 mt-3 bg-accent/15 text-accent px-3 py-2 rounded-lg text-xs border border-accent/20">{success}</div>
       )}
       {error && (
-        <div className="mx-4 mt-3 bg-red-50 text-red-700 px-3 py-2 rounded-lg text-xs border border-red-200">{error}</div>
+        <div className="mx-4 mt-3 bg-red-500/15 text-red-400 px-3 py-2 rounded-lg text-xs border border-red-500/20">{error}</div>
       )}
       <div className="divide-y divide-surface-500/30">
         {users.map((u) => (
@@ -694,7 +694,7 @@ function UsersTab() {
                 <p className="font-medium text-white text-sm">
                   {u.username}
                   {u.id === currentUser?.id && (
-                    <span className="text-[10px] text-primary-500 ml-1">(you)</span>
+                    <span className="text-[10px] text-accent ml-1">(you)</span>
                   )}
                 </p>
                 <p className="text-[11px] text-muted-dark">
@@ -702,7 +702,7 @@ function UsersTab() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${u.is_admin ? 'bg-primary-50 text-primary-700' : 'bg-surface-600 text-muted'}`}>
+                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${u.is_admin ? 'bg-accent/15 text-accent' : 'bg-surface-600 text-muted'}`}>
                   {u.is_admin ? 'Admin' : 'Player'}
                 </span>
                 {u.id !== currentUser?.id && (
@@ -794,7 +794,7 @@ function MembersTab() {
   if (loading) {
     return (
       <div className="flex justify-center py-6">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent" />
       </div>
     );
   }
@@ -838,8 +838,8 @@ function MembersTab() {
                       disabled={toggling === key}
                       className={`btn-sm !text-[11px] ${
                         m.paid
-                          ? 'btn-success'
-                          : 'btn-secondary !text-orange-600 !border-orange-200 hover:!bg-orange-50'
+                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                       }`}
                     >
                       {toggling === key ? '...' : m.paid ? 'Paid' : 'Unpaid'}
