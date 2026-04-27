@@ -1,46 +1,6 @@
 # Lovable Prompt — Tipovacka (Sports Tipping Game)
 
-Build a full-stack sports tipping (prediction) web app called **Tipovacka**. Users predict match scores, compete on leaderboards, and join tournaments. An admin panel manages everything. The app uses a dark emerald green theme inspired by Škoda X.
-
----
-
-## Tech Stack
-
-- **Frontend:** React + TypeScript + Tailwind CSS + React Router
-- **Backend:** Node.js + Express + TypeScript
-- **Database:** SQLite (via better-sqlite3) or Supabase (PostgreSQL)
-- **Auth:** JWT tokens in httpOnly cookies
-- **Email:** Nodemailer via SMTP (for password reset and match reminders)
-
----
-
-## Design System — Dark Emerald Green Theme
-
-The entire app uses a dark green color scheme:
-
-**Surface (background) colors:**
-- Page background: `#0E2A1F`
-- Card backgrounds: `#091A13`
-- Input backgrounds: `#060F0B`
-- Elevated/hover: `#133A2B`
-- Borders: `#1A4A38`
-
-**Accent (primary action):**
-- Main: `#78FAAE` (bright mint green)
-- Light: `#A5FCC8`
-- Dark: `#50E890`
-
-**Muted (secondary text):**
-- Default: `#8AA99B`
-- Light: `#A3BEB0`
-- Dark: `#5E7A6D`
-
-**Component styles:**
-- Buttons: `rounded-full`, pill-shaped. Primary = accent bg + dark text. Secondary = transparent + accent border. Danger = red/20% bg + red text.
-- Inputs: `rounded-xl`, dark bg, accent focus ring
-- Cards: `rounded-2xl`, dark card bg, subtle border
-- Text: white for primary, muted shades for secondary
-- Status colors: blue for upcoming, red for live, emerald for finished, purple for playoff badges
+Build a full-stack sports tipping (prediction) web app called **Tipovacka**. Users predict match scores, compete on leaderboards, and join tournaments. An admin panel manages everything. Come up with a clean, modern design that works well on both desktop and mobile.
 
 ---
 
@@ -171,7 +131,7 @@ The entire app uses a dark green color scheme:
 
 ### 1. Login Page (`/login`)
 - Centered card with username + password fields
-- Error display (red alert box)
+- Error display
 - Links to Register and Forgot Password
 - Redirect to /tournaments if already logged in
 
@@ -195,9 +155,9 @@ The entire app uses a dark green color scheme:
 ### 5. Matches Page (`/matches`) — Main page for predictions
 - **Header:** "Matches" title + count + filter pills (All / Upcoming / Finished)
 - **Match cards:** Each match shows:
-  - Date/time, status badge (Upcoming=blue, Live=red, Finished), playoff badge (purple "Play Off")
+  - Date/time, status badge (Upcoming, Live, Finished — each visually distinct), playoff badge ("Play Off") if applicable
   - Home team vs Away team
-  - If finished: actual score in accent green
+  - If finished: actual score highlighted
   - If upcoming: "vs" text
   
 - **Tip input (upcoming matches only, before kickoff):**
@@ -206,13 +166,14 @@ The entire app uses a dark green color scheme:
   - Can update tip until kickoff
 
 - **Tip results (after kickoff):**
-  - User's prediction shown with color-coded ring:
-    - Emerald ring = exact score match
-    - Blue ring = correct goal difference
-    - Yellow ring = correct outcome only
-    - Red background = wrong
-  - Other users' tips shown in a grid (username + their prediction + color coding)
-  - Users with no tip shown as "no tip" (muted)
+  - User's prediction shown with visual indicator for accuracy:
+    - Exact score match (best)
+    - Correct goal difference
+    - Correct outcome only
+    - Wrong prediction
+    - Each level should be visually distinct (e.g. different colors/borders)
+  - Other users' tips shown in a grid (username + their prediction + accuracy indicator)
+  - Users with no tip shown as "no tip"
 
 - **Visibility rule:** Other users' tips are HIDDEN until match starts (prevents copying)
 
@@ -232,7 +193,7 @@ The entire app uses a dark green color scheme:
   - **Tournament Predictions card:**
     - If active & before first match: form with team autocomplete + best scorer text input + Save button
     - If active & first match started: shows locked prediction (read-only)
-    - If finished: shows prediction with green/red coloring for correct/incorrect
+    - If finished: shows prediction with visual indicator for correct/incorrect
     - If finished: table showing all members' predictions with correctness indicators
 
   - **Match list** (same functionality as Matches page but scoped to tournament)
@@ -242,22 +203,22 @@ The entire app uses a dark green color scheme:
 
 ### 7. Leaderboard Page (`/leaderboard`)
 - **Tournament selector:** dropdown to filter by tournament or "All"
-- **Tournament description** shown if available (accent info box)
+- **Tournament description** shown if available (info box)
 - **Podium (top 3):**
   - 3 cards in a row: 2nd | 1st (elevated) | 3rd
-  - Medal colors: gold, silver, bronze backgrounds
+  - Visually distinguish 1st, 2nd, 3rd (e.g. gold/silver/bronze)
   - Shows username + total points
   - Highlights current user
 
 - **Full table:**
   - Columns: Rank | Player | Points | Exact | Diff | Outcome | Winner | Scorer | Tips
-  - Current user's row highlighted with accent background
+  - Current user's row highlighted
   - Responsive: hides columns on mobile (show only Rank, Player, Points on small screens)
   - Sort: points desc → exact scores desc → goal diffs desc (tiebreakers)
 
 - **Scoring Rules section:**
   - Grid of rule cards showing label + point value
-  - **Play Off section:** shows doubled point values for playoff matches (purple colored)
+  - **Play Off section:** shows doubled point values for playoff matches
   - Playoff multiplier value is dynamic (from scoring_rules table)
   - Hide the playoff_multiplier rule from regular rules display
 
@@ -268,7 +229,7 @@ The entire app uses a dark green color scheme:
 
 ### 9. Admin Page (`/admin`) — Admin only, show "Access denied" for non-admins
 
-**Tab navigation** (pill-shaped tabs): Matches | Tournaments | Scoring | Users | Members
+**Tab navigation:** Matches | Tournaments | Scoring | Users | Members
 
 #### Matches Tab
 - **Create Match form:** home team, away team, kickoff datetime, tournament selector, playoff checkbox
@@ -297,18 +258,18 @@ The entire app uses a dark green color scheme:
 
 #### Members Tab
 - Grouped by tournament
-- Each member: username + join date + Paid/Unpaid toggle button (green=paid, yellow=unpaid)
+- Each member: username + join date + Paid/Unpaid toggle button (visually distinct states)
 
 ---
 
 ## Navigation & Layout
 
 ### Header/Navbar
-- Left: Logo "T" badge (accent bg) + "Tipovacka" text (hidden on mobile)
+- Left: Logo "T" badge + "Tipovacka" text (hidden on mobile)
 - Center: nav links — Tournaments, Leaderboard, Admin (admin only)
 - Right: username → profile link, Sign Out button
 - Mobile: hamburger menu toggling nav links
-- Background: dark with backdrop blur, sticky top
+- Sticky top
 
 ### Route protection
 - Public routes (login, register, forgot-password, reset-password): redirect to /tournaments if logged in
